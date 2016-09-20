@@ -1,45 +1,64 @@
 # -*- coding: utf-8 -*-
 
-import time
-import json
 import requests
 import iso8601
 
-from datetime import datetime, timedelta
 
 GITHUB_API = 'https://api.github.com'
 
 
-def time_converter(date_str, utc2loacl=True):
+def date_converter(date_str, utc2loacl=True):
     jet_lag = timedelta(hours=8)
     if utc2loacl is True:
-        # adding jet_lag,from github utc to local
+        # adding jet_lag,from github utc to local(Beijing, China)
         date = iso8601.parse_date(date_str) + jet_lag
     else:
         date = iso8601.parse_date(date_str) - jet_lag
     return date
 
 
-def repo(owner, repo):
-    url = '/'.join([GITHUB_API, 'repos', owner, repo])
-    print url
-    r = requests.get(url)
-    print r.content
+class Repository(object):
+    def __init__(self, owner, repo):
+        self.url = '/'.join([GITHUB_API, 'repos', owner, repo])
+
+    # def get_repo(self):
+    #     repo = requests.get(self.url).json()
+    #     return repo
+
+    def get_commits_by_email(self, email=None, since=None, until=None):
+        url = '/'.join([self.url, 'commits'])
+        params = {'since': since, 'until': until, 'author': email}
+        r = requests.get(url, params=params)
+        return r.json()
+
+    def get_issues(self, page=1, since=None):
+        url = '/'.join([self.url, 'issues'])
+        params = {'since': since, 'page': page}
+        r = requests.get(url, params)
+        return r.json()
+
+    def get_issue_comments(self, number):
+        url = '/'.join([self.url, 'issues', number, 'comments'])
+        r = requests.get(url)
+        return r.json()
+
+    def get_pull_by_number(self, number):
+        url = '/'.join([self.url, 'pulls', number])
+        r = requests.get(url)
+        return r.json()
+
+    def get_pull_commits(self, number):
+        url = '/'.join([self.url, 'pulls', number, 'commits'])
+        r = requests.get(url)
+        return r.json()
 
 
-def get_issue(owner, repo):
-    url = '/'.join([GITHUB_API, 'repos', owner, repo,'issues'])
-
-def get_commits(owner, repo, email=None, since=None, until=None):
-    url = '/'.join([GITHUB_API, 'repos', owner, repo, 'commits'])
-    params = {'since': since, 'until': until, 'author': email}
-    r = requests.get(url, params=params)
-    print r.json()
-
-
-# repo('avocado-framework', 'avocado-vt')
-# get_commits('avocado-framework', 'avocado-vt')
+# *************************************************************************
 # '2016-09-18T08:50:35Z'
-# get_commits('hereischen', 'robin', 'hachen@redhat.com',
-#             until='2016-09-19T05:50:35Z')
-
+# print Repository('hereischen',
+# 'robin').get_commits_by_email(email='hachen@redhat.com',until='2016-09-16T05:50:35Z')
+# print Repository('avocado-framework', 'avocado-vt').get_issues()
+# print Repository('avocado-framework',
+# 'avocado-vt').get_pull_by_number('709')
+# print len(Repository('avocado-framework', 'avocado-vt').get_issue_comments('557'))
+# print Repository('avocado-framework', 'avocado-vt').get_pull_commits('709')
