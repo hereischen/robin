@@ -14,7 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+ROOT_DIR = os.path.dirname(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -78,7 +78,18 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    },
+    'default': {
+        # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'robin',
+        'USER': 'root',
+        'PASSWORD': '1qaz@WSX',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        # Set this to True to wrap each HTTP request in a transaction on this database.
+        'ATOMIC_REQUESTS': True,
+    },
 }
 
 
@@ -106,13 +117,17 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
+
+DATE_FORMAT = 'Y-m-d'
+
+DATETIME_FORMAT = 'y-m-d H:i:s'
 
 
 # Static files (CSS, JavaScript, Images)
