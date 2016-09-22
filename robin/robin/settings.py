@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django_crontab',
     'commons',
     'members',
     'statistics',
+    'crons',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -79,10 +81,6 @@ WSGI_APPLICATION = 'robin.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    },
     'default': {
         # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'ENGINE': 'django.db.backends.mysql',
@@ -138,3 +136,67 @@ DATETIME_FORMAT = 'y-m-d H:i:s'
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': ('%(levelname)s %(asctime)s %(module)s '
+                       '%(process)d %(thread)d %(message)s')
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        }
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'site.log'),
+            'formatter': 'verbose'
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'INFO'
+        },
+        'members': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'statistics': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'crons': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'django_crontab': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'commons': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+
+    }
+}
+
+CRONJOBS = [
+    # ('15 2 * * *', 'your corn'),
+]
