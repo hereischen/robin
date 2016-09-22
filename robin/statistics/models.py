@@ -2,8 +2,14 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django_extensions.db.fields import json as jsonfield
+# from django_extensions.db.fields import json as jsonfield
 from commons.models import Timestampable
+
+# System code
+STATE = (
+    (0, 'CLOSED'),
+    (1, 'OPEN'),
+)
 
 
 class Repository(Timestampable, models.Model):
@@ -29,12 +35,14 @@ class Issue(Timestampable, models.Model):
     issue_number = models.IntegerField(unique=True, verbose_name='issue number')
     tittle = models.CharField(max_length=256, verbose_name='issue tittle')
     issue_by = models.CharField(max_length=32, verbose_name='issue by')
-    state = models.CharField(verbose_name='state')  # may need to change to choice field with const choices.
+    issue_state = models.PositiveSmallIntegerField(default=1, choices=STATE, verbose_name='issue state')
     body = models.TextField(verbose_name='issue body')
-    merged = models.BooleanField(default=False, verbose_name='is_pull_merged')  # may need to be combined into state
 
-    comments = models.IntegerField(default=0, verbose_name='comments')  # !!!
-    commits = models.IntegerField(default=0, verbose_name='commits')  # !!!
+    pull_status = models.PositiveSmallIntegerField(default=1, choices=STATE, verbose_name='pull state')
+    pull_merged = models.BooleanField(default=False, verbose_name='is pull merged')
+
+    comments = models.IntegerField(default=0, verbose_name='comments')
+    commits = models.IntegerField(default=0, verbose_name='commits')
 
     addition = models.IntegerField(default=0, verbose_name='commits addition')
     deletions = models.IntegerField(default=0, verbose_name='commits deletions')
@@ -42,11 +50,11 @@ class Issue(Timestampable, models.Model):
 
     created_at = models.DateTimeField(verbose_name='issue created date')
     updated_at = models.DateTimeField(verbose_name='issue uodated date')
-    closed_at = models.DateTimeField(verbose_name='issue closed date')
+    closed_at = models.DateTimeField(null=True, verbose_name='issue closed date')
 
     # comments = jsonfield.JSONField(verbose_name=u'issue comments')
     # ForeignKeys:
-    # decide later
+    repository = models.ForeignKey('Repository', verbose_name='repository')
 
     class Meta:
         verbose_name = _('issue')
@@ -68,9 +76,9 @@ class Commit(Timestampable, models.Model):
     message = models.TextField(verbose_name='commit message')
 
     # ForeignKeys:
-    # need to be decide later
     repository = models.ForeignKey('Repository', verbose_name='repository')
-    issue = models.ForeignKey('Issue', verbose_name='issue')
+    # In commits, this field can be null,due to a commit can not relate to any issues
+    issue = models.ForeignKey('Issue', null=True, verbose_name='issue')
 
     class Meta:
         verbose_name = _('commit')
@@ -97,7 +105,8 @@ class Comments(Timestampable, models.Model):
     updated_at = models.DateTimeField(verbose_name='comment uodated date')
 
     # ForeignKeys:
-    # need to be decide later
+    repository = models.ForeignKey('Repository', verbose_name='repository')
+    issue = models.ForeignKey('Issue', verbose_name='issue')
 
     class Meta:
         verbose_name = _('comment')
