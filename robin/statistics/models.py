@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 # from django_extensions.db.fields import json as jsonfield
 from commons.models import Timestampable
 
-# System code
+# issue and pull state code
 STATE = (
     (0, 'CLOSED'),
     (1, 'OPEN'),
