@@ -36,3 +36,7 @@ class Member(Timestampable, models.Model):
 
     def __unicode__(self):
         return self.kerbroes_id
+
+    def save(self, **kwargs):
+        self.rh_email = '@'.join([self.kerbroes_id, 'redhat.com'])
+        super(Member, self).save(kwargs)
