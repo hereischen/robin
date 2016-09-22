@@ -105,7 +105,6 @@ class Comment(Timestampable, models.Model):
     updated_at = models.DateTimeField(verbose_name='comment uodated date')
 
     # ForeignKeys:
-    repository = models.ForeignKey('Repository', verbose_name='repository')
     issue = models.ForeignKey('Issue', verbose_name='issue')
 
     class Meta:
