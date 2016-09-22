@@ -94,7 +94,7 @@ class Commit(Timestampable, models.Model):
     # super(Commit, self).save(kwargs)
 
 
-class Comments(Timestampable, models.Model):
+class Comment(Timestampable, models.Model):
     """
     Defines fields of a comment.
     """
