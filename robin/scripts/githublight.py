@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import requests
-import iso8601
-from datetime import timedelta
 
 GITHUB_API = 'https://api.github.com'
 
@@ -16,9 +14,9 @@ class Repository(object):
     #     repo = requests.get(self.url).json()
     #     return repo
 
-    def get_commits_by_email(self, email=None, since=None, until=None):
+    def get_commits_by_email(self, email=None, since=None, until=None, page=1):
         url = '/'.join([self.url, 'commits'])
-        params = {'since': since, 'until': until, 'author': email}
+        params = {'since': since, 'until': until, 'author': email, 'page': page}
         r = requests.get(url, params=params)
         return r.json()
 
