@@ -28,7 +28,7 @@ def date_generartor():
     tz_offset = timedelta(hours=8)
     # since the very beginning of the yesterday local time(Beijing, China)
     since = today - timedelta(days=1) - tz_offset
-    # untill the last secs of the yesterday local time(Beijing, China)
+    # until the last secs of the yesterday local time(Beijing, China)
     until = today - timedelta(seconds=1) - tz_offset
     return since, until
 
@@ -45,29 +45,37 @@ def auto_load_commits_of_members():
     """
     load T-1 commits of all members into database.
     """
-    members = Member.objects.all()[1:]
-    repositories = Repository.objects.all()[:1]  # from database
+    # !!! there is an API rate limit, https://developer.github.com/v3/#rate-limiting
+    members = Member.objects.all()
+    repositories = Repository.objects.all()  # from database
     since, until = date_generartor()
 
     for repository in repositories:
         repo = Repo(repository.owner, repository.repo)
+        print repository
         # print repository log
         for member in members:
-            commits = repo.get_commits_by_email(member.rh_email, since, until)[1:]
+            print member
+            commits = repo.get_commits_by_email(member.rh_email, since, until)
+            print commits
             for commit in commits:
                 # print commit['sha']
                 # print commit['commit']['author']['name']
                 # print commit['commit']['author']['email']
                 # print type(commit['commit']['author']['date']), utc2local_parser(commit['commit']['author']['date'])
                 # print commit['commit']['message']
-                # print type(repository)
+                # date = str(utc2local_parser(commit['commit']['author']['date']))[:-6]
+                # print date, type(date)
                 Commit.objects.create(sha=commit['sha'],
                                       author=commit['commit']['author']['name'],
                                       email=commit['commit']['author']['email'],
-                                      date=utc2local_parser(commit['commit']['author']['date']),
+                                      date=str(utc2local_parser(commit['commit']['author']['date']))[:-6],
                                       message=commit['commit']['message'],
                                       repository=repository
                                       )
+
+# def auto_load_issues_commments_commit():
+
 
 # =================================
 auto_load_commits_of_members()
