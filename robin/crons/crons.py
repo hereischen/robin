@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 # project's time zone, in settings.py
 TIME_ZONE = common_helpers.get_config('TIME_ZONE')
+# Github ACCESS_TOKEN, API rate limit 5000/H
+ACCESS_TOKEN = common_helpers.get_config('ACCESS_TOKEN')
 
 
 def date_generartor():
@@ -56,7 +58,7 @@ def auto_load_commits_of_members():
         # print repository log
         for member in members:
             print member
-            commits = repo.get_commits_by_email(member.rh_email, since, until)
+            commits = repo.get_commits_by_email(member.rh_email, since, until, access_token=ACCESS_TOKEN)
             print commits
             for commit in commits:
                 # print commit['sha']

@@ -200,3 +200,6 @@ LOGGING = {
 CRONJOBS = [
     # ('15 2 * * *', 'your corn'),
 ]
+
+# Github access_token. API rate limit, https://developer.github.com/v3/#rate-limiting
+ACCESS_TOKEN = '1766285b6b303ecfbe97f201ed9e7d757f13335c'
