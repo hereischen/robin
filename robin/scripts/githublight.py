@@ -7,17 +7,8 @@ from datetime import timedelta
 GITHUB_API = 'https://api.github.com'
 
 
-def date_converter(date_str, utc2loacl=True):
-    jet_lag = timedelta(hours=8)
-    if utc2loacl is True:
-        # adding jet_lag,from github utc to local(Beijing, China)
-        date = iso8601.parse_date(date_str) + jet_lag
-    else:
-        date = iso8601.parse_date(date_str) - jet_lag
-    return date
-
-
 class Repository(object):
+
     def __init__(self, owner, repo):
         self.url = '/'.join([GITHUB_API, 'repos', owner, repo])
 
@@ -67,4 +58,5 @@ class Repository(object):
 # 'avocado-vt').get_pull_by_number('709')
 # print len(Repository('avocado-framework', 'avocado-vt').get_issue_comments('557'))
 # print Repository('avocado-framework', 'avocado-vt').get_pull_commits('709')
-# print Repository('avocado-framework', 'avocado-vt').get_issue_by_number('709')
+# print Repository('avocado-framework',
+# 'avocado-vt').get_issue_by_number('709')
