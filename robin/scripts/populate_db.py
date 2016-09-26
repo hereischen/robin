@@ -13,6 +13,10 @@ def populate_members():
                           name='Xu Tian',
                           github_account='xutian',
                           team=team)
+    Member.objects.create(kerbroes_id='coli',
+                          name='Cong Li',
+                          github_account='CongLi',
+                          team=team)
 
     print 'populate_members'
 
@@ -22,6 +26,11 @@ def populate_repos():
     Repository.objects.create(owner='avocado-framework', repo='avocado-vt')
 
     print 'populate_repos'
+
+
+def populate_db():
+    populate_members()
+    populate_repos()
 
 
 if __name__ == '__main__':

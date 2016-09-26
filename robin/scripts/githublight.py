@@ -44,25 +44,25 @@ class Repository(object):
         return r.json()
 
     def get_issue_by_number(self, number, access_token=None):
-        url = '/'.join([self.url, 'issues', number])
+        url = '/'.join([self.url, 'issues', str(number)])
         params = {'access_token': access_token}
         r = requests.get(url, params)
         return r.json()
 
     def get_issue_comments(self, number, access_token=None):
-        url = '/'.join([self.url, 'issues', number, 'comments'])
+        url = '/'.join([self.url, 'issues', str(number), 'comments'])
         params = {'access_token': access_token}
         r = requests.get(url, params)
         return r.json()
 
     def get_pull_by_number(self, number, access_token=None):
-        url = '/'.join([self.url, 'pulls', number])
+        url = '/'.join([self.url, 'pulls', str(number)])
         params = {'access_token': access_token}
         r = requests.get(url, params)
         return r.json()
 
     def get_pull_commits(self, number, access_token=None):
-        url = '/'.join([self.url, 'pulls', number, 'commits'])
+        url = '/'.join([self.url, 'pulls', str(number), 'commits'])
         params = {'access_token': access_token}
         r = requests.get(url, params)
         return r.json()
@@ -70,7 +70,7 @@ class Repository(object):
 
 # *************************************************************************
 # print Repository('hereischen', 'robin').get_commits_by_email(email='hachen@redhat.com', until='2016-09-16T05:50:35Z')
-print Repository('avocado-framework', 'avocado-vt').get_issues()
+# print Repository('avocado-framework', 'avocado-vt').get_issues()
 # print Repository('avocado-framework', 'avocado-vt').get_a_page_of_issues(page=2)
 # print Repository('avocado-framework', 'avocado-vt').get_issue_by_number('709')
 # print len(Repository('avocado-framework', 'avocado-vt').get_issue_comments('557'))
