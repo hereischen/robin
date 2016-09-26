@@ -9,6 +9,7 @@ from commons.models import Timestampable
 STATE = (
     (0, 'CLOSED'),
     (1, 'OPEN'),
+    (9, 'NOT FOUND'),
 )
 
 
@@ -33,18 +34,18 @@ class Issue(Timestampable, models.Model):
     Defines fields of an issue.
     """
     issue_number = models.IntegerField(unique=True, verbose_name='issue number')
-    tittle = models.CharField(max_length=256, verbose_name='issue tittle')
+    title = models.CharField(max_length=256, verbose_name='issue title')
     issue_by = models.CharField(max_length=32, verbose_name='issue by')
     issue_state = models.PositiveSmallIntegerField(default=1, choices=STATE, verbose_name='issue state')
     body = models.TextField(verbose_name='issue body')
 
-    pull_status = models.PositiveSmallIntegerField(default=1, choices=STATE, verbose_name='pull state')
+    pull_state = models.PositiveSmallIntegerField(default=1, choices=STATE, verbose_name='pull state')
     pull_merged = models.BooleanField(default=False, verbose_name='is pull merged')
 
     comments = models.IntegerField(default=0, verbose_name='comments')
     commits = models.IntegerField(default=0, verbose_name='commits')
 
-    addition = models.IntegerField(default=0, verbose_name='commits addition')
+    additions = models.IntegerField(default=0, verbose_name='commits additions')
     deletions = models.IntegerField(default=0, verbose_name='commits deletions')
     changed_files = models.IntegerField(default=0, verbose_name='changed files ')
 
@@ -61,7 +62,7 @@ class Issue(Timestampable, models.Model):
         verbose_name_plural = _('issues')
 
     def __unicode__(self):
-        return self.issue_number
+        return str(self.issue_number)
 
 
 class Commit(Timestampable, models.Model):
