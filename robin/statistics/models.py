@@ -5,11 +5,16 @@ from django.utils.translation import ugettext_lazy as _
 # from django_extensions.db.fields import json as jsonfield
 from commons.models import Timestampable
 
-# issue and pull state code
+# pull state code
 STATE = (
     (0, 'CLOSED'),
     (1, 'OPEN'),
-    (9, 'NOT FOUND'),
+)
+
+# comment type
+COMMENT_TYPE = (
+    (0, 'COMMENTS'),
+    (1, 'REVIEW COMMENTS'),
 )
 
 
@@ -29,40 +34,42 @@ class Repository(Timestampable, models.Model):
         return ('/'.join([self.owner, self.repo]))
 
 
-class Issue(Timestampable, models.Model):
+class Pull(Timestampable, models.Model):
     """
-    Defines fields of an issue.
+    Defines fields of an PullRequest.
     """
-    issue_number = models.IntegerField(unique=True, verbose_name='issue number')
-    title = models.CharField(max_length=256, verbose_name='issue title')
-    issue_by = models.CharField(max_length=32, verbose_name='issue by')
-    issue_state = models.PositiveSmallIntegerField(default=1, choices=STATE, verbose_name='issue state')
-    body = models.TextField(verbose_name='issue body')
+    pull_number = models.IntegerField(unique=True, verbose_name='pull request number')
+    title = models.CharField(max_length=256, verbose_name='pull request title')
+    author = models.CharField(max_length=32, verbose_name='pull request by')
+
+    body = models.TextField(verbose_name='pull request body')
+    bug_id = models.CharField(max_length=32, null=True, verbose_name='bug id')
 
     pull_state = models.PositiveSmallIntegerField(default=1, choices=STATE, verbose_name='pull state')
     pull_merged = models.BooleanField(default=False, verbose_name='is pull merged')
 
     comments = models.IntegerField(default=0, verbose_name='comments')
+    review_comments = models.IntegerField(default=0, verbose_name='review_comments')
     commits = models.IntegerField(default=0, verbose_name='commits')
 
     additions = models.IntegerField(default=0, verbose_name='commits additions')
     deletions = models.IntegerField(default=0, verbose_name='commits deletions')
     changed_files = models.IntegerField(default=0, verbose_name='changed files ')
 
-    created_at = models.DateTimeField(verbose_name='issue created date')
-    updated_at = models.DateTimeField(verbose_name='issue uodated date')
-    closed_at = models.DateTimeField(null=True, verbose_name='issue closed date')
+    created_at = models.DateTimeField(verbose_name='pull request created date')
+    updated_at = models.DateTimeField(verbose_name='pull request uodated date')
+    closed_at = models.DateTimeField(null=True, verbose_name='pull request closed date')
 
     # comments = jsonfield.JSONField(verbose_name=u'issue comments')
     # ForeignKeys:
     repository = models.ForeignKey('Repository', verbose_name='repository')
 
     class Meta:
-        verbose_name = _('issue')
-        verbose_name_plural = _('issues')
+        verbose_name = _('pull_request')
+        verbose_name_plural = _('pull_requests')
 
     def __unicode__(self):
-        return str(self.issue_number)
+        return str(self.pull_number)
 
 
 class Commit(Timestampable, models.Model):
@@ -79,7 +86,7 @@ class Commit(Timestampable, models.Model):
     # ForeignKeys:
     repository = models.ForeignKey('Repository', verbose_name='repository')
     # In commits, this field can be null,due to a commit can not relate to any issues
-    issue = models.ForeignKey('Issue', null=True, verbose_name='issue')
+    pull = models.ForeignKey('Pull', null=True, verbose_name='pull request')
 
     class Meta:
         verbose_name = _('commit')
@@ -88,25 +95,20 @@ class Commit(Timestampable, models.Model):
     def __unicode__(self):
         return self.sha
 
-    # def save(self, **kwargs):
-    #     pass
-    # to do, covert datetime
-    # self.date = _covert_to_utc(self.utc)
-    # super(Commit, self).save(kwargs)
-
 
 class Comment(Timestampable, models.Model):
     """
     Defines fields of a comment.
     """
     comment_id = models.IntegerField(unique=True, verbose_name='comment id')
+    comment_type = models.PositiveSmallIntegerField(default=1, choices=COMMENT_TYPE, verbose_name='comment type')
     author = models.CharField(max_length=32, verbose_name='comment author')  # github login
     body = models.TextField(verbose_name='comment body')
     created_at = models.DateTimeField(verbose_name='comment created date')
     updated_at = models.DateTimeField(verbose_name='comment uodated date')
 
     # ForeignKeys:
-    issue = models.ForeignKey('Issue', verbose_name='issue')
+    pull = models.ForeignKey('Pull', null=True, verbose_name='pull request')
 
     class Meta:
         verbose_name = _('comment')
