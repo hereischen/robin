@@ -37,6 +37,33 @@ class Repository(object):
         # print len(res)
         return res
 
+    def get_pulls(self, page=0, state='all', access_token=None):
+        url = '/'.join([self.url, 'pulls'])
+        # based on observations, default items returned by guthub api v3 is 30
+        page_depth = 0
+        per_page = 30
+        res = []
+        if page_depth == page:
+            while True:
+                # print 'page number >>>', page
+                page += 1
+                params = {'page': page, 'state': state, 'access_token': access_token}
+                r = requests.get(url, params)
+                res.extend(r.json())
+                # print 'len of this page', len(r.json())
+                if len(r.json()) < per_page:
+                    break
+        else:
+            while page_depth < page:
+                page_depth += 1
+                params = {'page': page_depth, 'state': state, 'access_token': access_token}
+                r = requests.get(url, params)
+                res.extend(r.json())
+                if len(r.json()) < per_page:
+                    break
+        # print len(res)
+        return res
+
     def get_a_page_of_issues(self, page=1, since=None, state='all', access_token=None):
         url = '/'.join([self.url, 'issues'])
         params = {'since': since, 'page': page, 'state': state, 'access_token': access_token}
@@ -50,7 +77,15 @@ class Repository(object):
         return r.json()
 
     def get_issue_comments(self, number, access_token=None):
+        # just comments
         url = '/'.join([self.url, 'issues', str(number), 'comments'])
+        params = {'access_token': access_token}
+        r = requests.get(url, params)
+        return r.json()
+
+    def get_pull_comments(self, number, access_token=None):
+        # review comments
+        url = '/'.join([self.url, 'pulls', str(number), 'comments'])
         params = {'access_token': access_token}
         r = requests.get(url, params)
         return r.json()
@@ -76,3 +111,5 @@ class Repository(object):
 # print len(Repository('avocado-framework', 'avocado-vt').get_issue_comments('557'))
 # print Repository('avocado-framework', 'avocado-vt').get_pull_by_number('709')
 # print Repository('avocado-framework', 'avocado-vt').get_pull_commits('709')
+# Repository('avocado-framework', 'avocado-vt').get_pulls()
+# print len(Repository('avocado-framework', 'avocado-vt').get_pull_comments('699'))
