@@ -115,4 +115,4 @@ class Comment(Timestampable, models.Model):
         verbose_name_plural = _('comments')
 
     def __unicode__(self):
-        return self.comment_id
+        return str(self.comment_id)
