@@ -161,19 +161,20 @@ def auto_load_pulls():
                                                   pull=pull_db)
 
 
-def _regex_bug_id(content, regex):
-    regex, res = regex, None
-    text = content.encode("utf-8")
-    match = regex.search(text)
-    if match:
-        res = re.findall(r"\d+", match.groups()[0])[0]
-    return res
+# def _regex_bug_id(content, regex):
+#     regex, res = regex, None
+#     text = content.encode("utf-8")
+#     match = regex.search(text)
+#     if match:
+#         res = re.findall(r"\d+", match.groups()[0])[0]
+#     return res
 
 
-# todo read bug id in pull body or comments type 0
+# todo discuss later!!!
+@dbtransaction.atomic
 def auto_retrieve_bug_id():
     """
-    load bug id into pull if pull.bug_id is null, todo discuss later!!!
+    load bug id into pull if pull.bug_id is null
     """
     pulls_db = Pull.objects.filter(bug_id=None)
     regex = re.compile(r"id:(.*)", re.M | re.I)
@@ -200,9 +201,26 @@ def auto_retrieve_bug_id():
 
 
 # todo change pull state
+@dbtransaction.atomic
+def auto_change_pull_state():
+    """
+    change pull state when it is closed
+    """
+    # pull requests are still open
+    pulls_db = Pull.objects.filter(pull_state=1)
+    for pull_db in pulls_db:
+        repo = Repo(pull_db.repository.owner, pull_db.repository.repo)
+        pull = repo.get_pull_by_number(number=pull_db.pull_number, access_token=ACCESS_TOKEN)
+        if pull['state'] == 'closed':
+            # if cloesed, change states
+            pull_db.pull_state = 0
+            pull_db.pull_merged = pull['merged']
+            pull_db.closed_at = str(utc2local_parser(pull['closed_at']))[:-6]
+            pull_db.save()
 
 # =================================
 # auto_load_commits_of_members()
 # auto_load_issues()
 # auto_load_pulls()
 # auto_retrieve_bug_id()
+auto_change_pull_state()
