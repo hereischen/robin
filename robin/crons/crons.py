@@ -1,4 +1,4 @@
-
+import re
 import logging
 import iso8601
 import pytz
@@ -40,6 +40,10 @@ def utc2local_parser(date):
     load utc date string into local(Beijing) date ojetcs.
     """
     return iso8601.parse_date(date).astimezone(pytz.timezone(TIME_ZONE))
+
+
+def _test(content):
+    pass
 
 
 def _create_comments(comments, comment_type, pull_db, members):
@@ -88,92 +92,11 @@ def auto_load_commits_of_members():
                                       )
 
 
-# @dbtransaction.atomic
-# def auto_load_issues():
-#     members = Member.objects.all()
-#     repositories_db = Repository.objects.all()  # from database
-#     since, until = date_generartor()
-
-#     for repository_db in repositories_db:
-#         print repository_db
-#         repo = Repo(repository_db.owner, repository_db.repo)
-#         issues = repo.get_issues(since=since, access_token=ACCESS_TOKEN)
-#         print len(issues), 'no of issues'
-#         for issue in issues[:3]:  # debug!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#             # issues that issued by members are count.
-#             if issue['user']['login'] in [member.github_account for member in members]:
-
-#                 if issue['state'] == 'closed':
-#                     issue['state'] = 0
-#                 if issue['state'] == 'open':
-#                     issue['state'] = 1
-#                 if issue['closed_at'] is not None:
-#                     issue['closed_at'] = str(utc2local_parser(issue['closed_at']))[:-6]
-
-#                 if 'pull_request' in issue.keys():
-#                     # current issue has pull request.
-#                     pull = repo.get_pull_by_number(number=issue['number'], access_token=ACCESS_TOKEN)
-#                     if pull['state'] == 'closed':
-#                         pull['state'] = 0
-#                     if pull['state'] == 'open':
-#                         pull['state'] = 1
-#                     issue_db = Issue.objects.create(issue_number=issue['number'],
-#                                                     title=issue['title'],
-#                                                     issue_by=issue['user']['login'],
-#                                                     issue_state=issue['state'],
-#                                                     body=issue['body'],
-#                                                     pull_state=pull['state'],
-#                                                     pull_merged=pull['merged'],
-#                                                     comments=issue['comments'],
-#                                                     commits=pull['commits'],
-#                                                     additions=pull['additions'],
-#                                                     deletions=pull['deletions'],
-#                                                     changed_files=pull['changed_files'],
-#                                                     created_at=str(utc2local_parser(issue['created_at']))[:-6],
-#                                                     updated_at=str(utc2local_parser(issue['updated_at']))[:-6],
-#                                                     closed_at=issue['closed_at'],
-#                                                     repository=repository_db
-#                                                     )
-
-#                     if issue_db.comments > 0:
-#                         #  create issue's comments in db if it exists
-#                         _create_comments(repo, issue, issue_db, members)
-
-#                     #  create issue's commits in db if it exists
-#                     commits = repo.get_pull_commits(issue['number'])
-#                     for commit in commits:
-#                         # commits that commitd by members are count.
-#                         if commit['commit']['author']['email'] in [member.rh_email for member in members]:
-#                             Commit.objects.create(sha=commit['sha'],
-#                                                   author=commit['commit']['author']['name'],
-#                                                   email=commit['commit']['author']['email'],
-#                                                   date=str(utc2local_parser(commit['commit']['author']['date']))[:-6],
-#                                                   message=commit['commit']['message'],
-#                                                   repository=repository_db,
-#                                                   issue=issue_db)
-
-#                 else:
-#                     # in this case, current issue does not have pull requests, so it does not have commits.
-#                     # but it may have comments.
-#                     issue_db = Issue.objects.create(issue_number=issue['number'],
-#                                                     title=issue['title'],
-#                                                     issue_by=issue['user']['login'],
-#                                                     issue_state=issue['state'],
-#                                                     pull_state=9,
-#                                                     body=issue['body'],
-#                                                     comments=issue['comments'],
-#                                                     created_at=str(utc2local_parser(issue['created_at']))[:-6],
-#                                                     updated_at=str(utc2local_parser(issue['updated_at']))[:-6],
-#                                                     closed_at=issue['closed_at'],
-#                                                     repository=repository_db,
-#                                                     )
-#                     if issue_db.comments > 0:
-#                         #  create issue's comments in db if it exists
-                # _create_comments(repo, issue, issue_db, members)
-
-
 @dbtransaction.atomic
 def auto_load_pulls():
+    """
+    load the latest page of pull request and its comment, commits into database.
+    """
     members = Member.objects.all()
     repositories_db = Repository.objects.all()  # from database
     since, until = date_generartor()
@@ -183,7 +106,7 @@ def auto_load_pulls():
         repo = Repo(repository_db.owner, repository_db.repo)
         # due to can not get pulls by date, everyday get latest 30.
         pulls = repo.get_pulls(page=1, access_token=ACCESS_TOKEN)
-        print len(pulls), 'no of pulls'
+        # print len(pulls), 'no of pulls'
         for pull in pulls:  # debug!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             # only pulls that pulled by members are count.
             if pull['user']['login'] in [member.github_account for member in members]:
@@ -238,10 +161,48 @@ def auto_load_pulls():
                                                   pull=pull_db)
 
 
-# todo read bug id in iusse body or comments
-# todo change issue(pull) state
+def _regex_bug_id(content, regex):
+    regex, res = regex, None
+    text = content.encode("utf-8")
+    match = regex.search(text)
+    if match:
+        res = re.findall(r"\d+", match.groups()[0])[0]
+    return res
+
+
+# todo read bug id in pull body or comments type 0
+def auto_retrieve_bug_id():
+    """
+    load bug id into pull if pull.bug_id is null, todo discuss later!!!
+    """
+    pulls_db = Pull.objects.filter(bug_id=None)
+    regex = re.compile(r"id:(.*)", re.M | re.I)
+    # first search bug_id in pull body
+    for pull_db in pulls_db:
+        bug_id = None
+        text = pull_db.body.encode("utf-8")
+        match = regex.search(text)
+        if match:
+            bug_id = re.findall(r"\d+", match.groups()[0])[0]
+
+        # if not in pull body serach from comments.
+        if bug_id is None:
+            comments_db = Comment.objects.filter(pull=pull_db, comment_type=0, author=pull_db.author)
+            for comment_db in comments_db:
+                text = comment_db.body.encode("utf-8")
+                match = regex.search(text)
+                if match:
+                    bug_id = re.findall(r"\d+", match.groups()[0])[0]
+            # print bug_id
+        # print bug_id, pull_db, '*' * 24
+        pull_db.bug_id = bug_id
+        pull_db.save()
+
+
+# todo change pull state
 
 # =================================
 # auto_load_commits_of_members()
 # auto_load_issues()
-auto_load_pulls()
+# auto_load_pulls()
+# auto_retrieve_bug_id()
