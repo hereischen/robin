@@ -18,12 +18,19 @@ COMMENT_TYPE = (
 )
 
 
+class RepositoryManager(models.Manager):
+
+    def is_exist(self, repo_id):
+        return True if self.get_queryset().filter(id=repo_id) else False
+
+
 class Repository(Timestampable, models.Model):
     """
     Defines fields of a repository.
     """
     owner = models.CharField(max_length=32, verbose_name='repository owner')
     repo = models.CharField(max_length=32, verbose_name='repository name')
+    objects = RepositoryManager()
 
     class Meta:
         verbose_name = _('repository')
