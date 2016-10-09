@@ -9,20 +9,25 @@ from members.models import Team, Member
 
 logger = logging.getLogger(__name__)
 
+STATS_TYPE = (
+    (1, "Personal"),
+    (2, "Team"),
+)
+
 
 class RepositorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Repository
-        fields = ('pk', 'owner', 'repo')
+        fields = ('id', 'owner', 'repo')
 
 
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
-        fields = ('pk', 'team_name', 'team_code')
+        fields = ('id', 'team_name', 'team_code')
 
 
-class PersonalStatisSerializer(serializers.Serializer):
+class PersonalStatsSerializer(serializers.Serializer):
     repository_id = serializers.IntegerField(required=True)
     kerbroes_id = serializers.CharField(required=True)
     start_date = serializers.DateField(required=True)
@@ -30,6 +35,19 @@ class PersonalStatisSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('repository_id', 'kerbroes_id', 'query_start_date', 'query_end_date')
+
+
+class CommitStatsSerializer(serializers.Serializer):
+    stats_type = serializers.ChoiceField(choices=STATS_TYPE, required=True)
+    repository_id = serializers.IntegerField(required=True)
+    team_code = serializers.CharField(required=False)
+    kerbroes_id = serializers.CharField(required=False)
+    start_date = serializers.DateField(required=True)
+    end_date = serializers.DateField(required=True)
+
+    class Meta:
+        fields = ('repository_id', 'stats_type', 'team_code',
+                  'kerbroes_id', 'query_start_date', 'query_end_date')
 
 
 class PendingSerializer(serializers.Serializer):
