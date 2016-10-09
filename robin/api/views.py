@@ -81,16 +81,14 @@ def opening_patchs(request):
     if request.method == 'GET':
         serializer = BasesStatsSerializer(data=request.query_params)
         if serializer.is_valid():
-            stats_type = serializer.validated_data['stats_type']
-            repository_id = serializer.validated_data['repository_id']
-            team_code = serializer.validated_data.get('team_code', '')
-            kerbroes_id = serializer.validated_data.get('kerbroes_id', '')
             start_date = serializer.validated_data['start_date']
             end_date = serializer.validated_data['end_date']
 
             details = []
-            repo = Repository.objects.get(id=repository_id)
-            kerbroes_id_list = _stats_type_sortor(stats_type, team_code, kerbroes_id)
+            repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
+            kerbroes_id_list = _stats_type_sortor(serializer.validated_data['stats_type'],
+                                                  serializer.validated_data.get('team_code', ''),
+                                                  serializer.validated_data.get('kerbroes_id', ''))
 
             for kerbroes_id in kerbroes_id_list:
                 member = Member.objects.get(kerbroes_id=kerbroes_id)
@@ -119,16 +117,14 @@ def closed_patchs(request):
     if request.method == 'GET':
         serializer = BasesStatsSerializer(data=request.query_params)
         if serializer.is_valid():
-            stats_type = serializer.validated_data['stats_type']
-            repository_id = serializer.validated_data['repository_id']
-            team_code = serializer.validated_data.get('team_code', '')
-            kerbroes_id = serializer.validated_data.get('kerbroes_id', '')
             start_date = serializer.validated_data['start_date']
             end_date = serializer.validated_data['end_date']
 
             details = []
-            repo = Repository.objects.get(id=repository_id)
-            kerbroes_id_list = _stats_type_sortor(stats_type, team_code, kerbroes_id)
+            repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
+            kerbroes_id_list = _stats_type_sortor(serializer.validated_data['stats_type'],
+                                                  serializer.validated_data.get('team_code', ''),
+                                                  serializer.validated_data.get('kerbroes_id', ''))
 
             for kerbroes_id in kerbroes_id_list:
                 member = Member.objects.get(kerbroes_id=kerbroes_id)
@@ -157,16 +153,14 @@ def updated_patchs(request):
     if request.method == 'GET':
         serializer = BasesStatsSerializer(data=request.query_params)
         if serializer.is_valid():
-            stats_type = serializer.validated_data['stats_type']
-            repository_id = serializer.validated_data['repository_id']
-            team_code = serializer.validated_data.get('team_code', '')
-            kerbroes_id = serializer.validated_data.get('kerbroes_id', '')
             start_date = serializer.validated_data['start_date']
             end_date = serializer.validated_data['end_date']
 
             details = []
-            repo = Repository.objects.get(id=repository_id)
-            kerbroes_id_list = _stats_type_sortor(stats_type, team_code, kerbroes_id)
+            repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
+            kerbroes_id_list = _stats_type_sortor(serializer.validated_data['stats_type'],
+                                                  serializer.validated_data.get('team_code', ''),
+                                                  serializer.validated_data.get('kerbroes_id', ''))
 
             for kerbroes_id in kerbroes_id_list:
                 member = Member.objects.get(kerbroes_id=kerbroes_id)
@@ -195,16 +189,14 @@ def commit_stats(request):
     if request.method == 'GET':
         serializer = BasesStatsSerializer(data=request.query_params)
         if serializer.is_valid():
-            stats_type = serializer.validated_data['stats_type']
-            repository_id = serializer.validated_data['repository_id']
-            team_code = serializer.validated_data.get('team_code', '')
-            kerbroes_id = serializer.validated_data.get('kerbroes_id', '')
             start_date = serializer.validated_data['start_date']
             end_date = serializer.validated_data['end_date']
 
             details = []
-            repo = Repository.objects.get(id=repository_id)
-            kerbroes_id_list = _stats_type_sortor(stats_type, team_code, kerbroes_id)
+            repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
+            kerbroes_id_list = _stats_type_sortor(serializer.validated_data['stats_type'],
+                                                  serializer.validated_data.get('team_code', ''),
+                                                  serializer.validated_data.get('kerbroes_id', ''))
 
             for kerbroes_id in kerbroes_id_list:
                 member = Member.objects.get(kerbroes_id=kerbroes_id)
