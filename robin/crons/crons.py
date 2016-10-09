@@ -200,15 +200,17 @@ def auto_retrieve_bug_id():
         pull_db.save()
 
 
-# todo change pull state
+# todo change pull state when it is closed, or updated
+# also need to change stats eg. commits, additions..
 @dbtransaction.atomic
 def auto_change_pull_state():
     """
-    change pull state when it is closed
+    change pull state when it is closed or updated
     """
     # pull requests are still open
     pulls_db = Pull.objects.filter(pull_state=1)
     for pull_db in pulls_db:
+        # call github api
         repo = Repo(pull_db.repository.owner, pull_db.repository.repo)
         pull = repo.get_pull_by_number(number=pull_db.pull_number, access_token=ACCESS_TOKEN)
         if pull['state'] == 'closed':
@@ -223,4 +225,4 @@ def auto_change_pull_state():
 # auto_load_issues()
 # auto_load_pulls()
 # auto_retrieve_bug_id()
-auto_change_pull_state()
+# auto_change_pull_state()
