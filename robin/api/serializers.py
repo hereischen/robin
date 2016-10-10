@@ -40,6 +40,16 @@ class BasesStatsSerializer(serializers.Serializer):
                   'kerbroes_id', 'query_start_date', 'query_end_date')
 
 
+class CommentStatsSerializer(serializers.Serializer):
+    repository_id = serializers.IntegerField(required=True)
+    kerbroes_id = serializers.CharField(required=True)
+    start_date = serializers.DateField(required=True)
+    end_date = serializers.DateField(required=True)
+
+    class Meta:
+        fields = ('repository_id', 'kerbroes_id',
+                  'query_start_date', 'query_end_date')
+
 # class ClosedPatchSerializer(BasesStatsSerializer):
 #     pass
 

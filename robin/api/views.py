@@ -12,7 +12,8 @@ from .serializers import (RepositorySerializer,
                           # ClosedPatchSerializer,
                           PendingSerializer,
                           # CommitStatsSerializer,
-                          BasesStatsSerializer,)
+                          BasesStatsSerializer,
+                          CommentStatsSerializer,)
 from commons.exceptions import APIError
 
 
@@ -236,6 +237,36 @@ def pending_patchs(request):
                                 'total_pending': total_pending.days,
                                 'last_updated': last_updated.days,
                                 })
+
+            response = _paginate_response(details, request)
+            return response
+        raise APIError(APIError.INVALID_REQUEST_DATA, detail=serializer.errors)
+    raise APIError(APIError.INVALID_REQUEST_METHOD, detail='Does Not Support Post Method')
+
+
+@api_view(['GET'])
+def comment_stats(request):
+    if request.method == 'GET':
+        serializer = CommentStatsSerializer(data=request.query_params)
+        if serializer.is_valid():
+            start_date = serializer.validated_data['start_date']
+            end_date = serializer.validated_data['end_date']
+
+            details = []
+            repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
+            kerbroes_id_list = serializer.validated_data.get('kerbroes_id', '').strip().split(',')
+            for kerbroes_id in kerbroes_id_list:
+                member = Member.objects.get(kerbroes_id=kerbroes_id)
+                comments = Comment.objects.filter(author=member.github_account, comment_type=1,
+                                                  created_at__range=(start_date, end_date), pull__repository=repo)
+                for comment in comments:
+                    details.append({'comment_id': comment.comment_id,
+                                    'pacth_number': comment.pull.pull_number,
+                                    'author': member.kerbroes_id,
+                                    'body': comment.body,
+                                    'created_at': comment.created_at,
+                                    'updated_at': comment.updated_at,
+                                    })
 
             response = _paginate_response(details, request)
             return response

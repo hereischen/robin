@@ -12,5 +12,6 @@ urlpatterns = [
     url(r'^stats/updated-patchs/$', views.updated_patchs),
     url(r'^stats/pending-patchs/$', views.pending_patchs),
     url(r'^stats/commits/$', views.commit_stats),
+    url(r'^stats/comments/$', views.comment_stats),
 
 ]
