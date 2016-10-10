@@ -97,7 +97,7 @@ def opening_patchs(request):
                                             author=member.github_account, created_at__range=(start_date, end_date))
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
-                                    'pacth_title': pull.title,
+                                    'patch_title': pull.title,
                                     'author': member.kerbroes_id,
                                     'pull_merged': pull.pull_merged,
                                     'commits': pull.commits,
@@ -133,7 +133,7 @@ def closed_patchs(request):
                                             author=member.github_account, closed_at__range=(start_date, end_date))
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
-                                    'pacth_title': pull.title,
+                                    'patch_title': pull.title,
                                     'author': member.kerbroes_id,
                                     'pull_merged': pull.pull_merged,
                                     'commits': pull.commits,
@@ -169,7 +169,7 @@ def updated_patchs(request):
                                             author=member.github_account, updated_at__range=(start_date, end_date))
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
-                                    'pacth_title': pull.title,
+                                    'patch_title': pull.title,
                                     'author': member.kerbroes_id,
                                     'pull_merged': pull.pull_merged,
                                     'commits': pull.commits,
@@ -232,7 +232,7 @@ def pending_patchs(request):
                 total_pending = today - pull.created_at
                 last_updated = today - pull.updated_at
                 details.append({'patch_number': pull.pull_number,
-                                'pacth_title': pull.title,
+                                'patch_title': pull.title,
                                 'author': member.kerbroes_id,
                                 'total_pending': total_pending.days,
                                 'last_updated': last_updated.days,
@@ -261,7 +261,7 @@ def comment_stats(request):
                                                   created_at__range=(start_date, end_date), pull__repository=repo)
                 for comment in comments:
                     details.append({'comment_id': comment.comment_id,
-                                    'pacth_number': comment.pull.pull_number,
+                                    'patch_number': comment.pull.pull_number,
                                     'author': member.kerbroes_id,
                                     'body': comment.body,
                                     'created_at': comment.created_at,
