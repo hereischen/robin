@@ -4,11 +4,16 @@
 
 {% block title %}Robin{% endblock %}
 
+
 {% block body_block %}
-<!-- <div class="jumbotron">
-  <h3>Theme example</h3>
-  <p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point to create something more unique by building on or modifying it.</p>
-</div> -->
+    <div class="jumbotron">
+        <h3>Theme example</h3>
+        <p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point to create something more unique by building on or modifying it.</p>
+
+        <div id="example-1">
+          Hello ${ name }!
+        </div>
+    </div>
 
       <div class="page-header">
         <h1>Tables</h1>
@@ -53,5 +58,5 @@
 {% endblock %}
 
 {% block script %}
-<script src="{% static 'js/index.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}
