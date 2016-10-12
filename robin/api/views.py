@@ -13,7 +13,8 @@ from .serializers import (RepositorySerializer,
                           PendingSerializer,
                           # CommitStatsSerializer,
                           BasesStatsSerializer,
-                          CommentStatsSerializer,)
+                          CommentStatsSerializer,
+                          MemberSerializer,)
 from commons.exceptions import APIError
 
 
@@ -75,6 +76,40 @@ class TeamListView(APIView):
         result_page = paginator.paginate_queryset(teams, request)
         serializer = TeamSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+# class MemberListView(APIView):
+#     """
+#     returns all the tracked teams
+#     """
+
+#     def get(self, request, team_code, format=None):
+#         # Returns a JSON response with a listing of Team objects
+#         members = Member.objects.filter(team_code=team_code)
+#         paginator = PageNumberPagination()
+#         result_page = paginator.paginate_queryset(members, request)
+#         serializer = MemberSerializer(result_page, many=True)
+#         return paginator.get_paginated_response(serializer.data)
+
+
+@api_view(['GET'])
+def member_list(request):
+    if request.method == 'GET':
+        serializer = MemberSerializer(data=request.query_params)
+        if serializer.is_valid():
+            details = []
+            team = Team.objects.get(team_code=serializer.validated_data['team_code'])
+            members = Member.objects.filter(team=team)
+            for member in members:
+                details.append({'name': member.name,
+                                'kerbroes_id': member.kerbroes_id,
+                                'github_account': member.github_account,
+                                })
+            response = _paginate_response(details, request)
+            return response
+
+        raise APIError(APIError.INVALID_REQUEST_DATA, detail=serializer.errors)
+    raise APIError(APIError.INVALID_REQUEST_METHOD, detail='Does Not Support Post Method')
 
 
 @api_view(['GET'])

@@ -27,6 +27,13 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = ('id', 'team_name', 'team_code')
 
 
+class MemberSerializer(serializers.Serializer):
+    team_code = serializers.CharField(required=True)
+
+    class Meta:
+        fields = ('team_code',)
+
+
 class BasesStatsSerializer(serializers.Serializer):
     stats_type = serializers.ChoiceField(choices=STATS_TYPE, required=True)
     repository_id = serializers.IntegerField(required=True)
