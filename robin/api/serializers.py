@@ -22,9 +22,12 @@ class RepositorySerializer(serializers.ModelSerializer):
 
 
 class TeamSerializer(serializers.ModelSerializer):
+    members = serializers.StringRelatedField(many=True)
+    # members = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
     class Meta:
         model = Team
-        fields = ('id', 'team_name', 'team_code')
+        fields = ('id', 'team_name', 'team_code', 'members')
 
 
 class MemberSerializer(serializers.Serializer):
