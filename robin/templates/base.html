@@ -52,7 +52,7 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="#">Home</a></li>
+            <li class="active"><a href="/">Home</a></li>
            <!--  <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li> -->
           </ul>
@@ -75,7 +75,8 @@
     <!-- <script src="{% static 'js/docs.min.js' %}" ></script> -->
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}" ></script>
-    <script src="//cdn.bootcss.com/vue/1.0.13/vue.min.js"></script>
+    <script src="{% static 'js/vue1.0.13/vue.min.js' %}" ></script>
+    <!-- <script src="//cdn.bootcss.com/vue/1.0.13/vue.min.js"></script> -->
     <script>Vue.config.delimiters = ['${', '}'];</script>
     {% block script %}
     {% endblock %}

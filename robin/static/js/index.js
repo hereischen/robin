@@ -57,6 +57,10 @@ function get(url, data) {
 var reopData = new Vue({
     el: 'body',
     data: {
+        msg: '',
+        alertType: 'success',
+        category: '',
+        hasRes: false,
         repoData: {
             count: 0,
             baseUrl: null,
@@ -78,11 +82,13 @@ var reopData = new Vue({
             prevUrl: null,
             pendingPatchs: [],
         },
+        resData: {},
         repoTmp: [],
         teamTmp: [],
         // Repochecked: false,
         // repository_id: 0,
         pendingPatchs: [],
+        type: 1,
         beginTime: '',
         endTime: ''
     },
@@ -117,6 +123,40 @@ var reopData = new Vue({
         }
     },
     methods: {
+         submit: function() {
+            var self = this;
+            if (self.beginTime.length == 0 || self.endTime.length == 0) {
+                tips.call(self, 'Start and End dates are required.', 'danger')
+                return;
+            }
+
+            if (+new Date(self.beginTime) > +new Date(self.endTime)) {
+                tips.call(self, 'Start date can not be later than the End date.', 'danger')
+                return;
+            }
+            console.log(this.category);
+            if (this.category == 'closedPatchs'){
+                get('/api/stats/closed-patchs', {
+                    repository_id: self.repoTmp[0].id,
+                    stats_type: self.type,
+                    kerbroes_id: self.teamTmp[0].members.join(','),
+                    start_date: self.beginTime,
+                    end_date: self.endTime
+                }).then(function(res) {
+                    console.log(res)
+                    console.log(self.category)
+                    self.resData = res,
+                    self.hasRes = true,
+                    $('#myModal').modal('hide');
+                    tips.call(self, 'Query Success', 'success');
+                });
+            }
+
+        },
+        returnBack: function() {
+            this.resData = {};
+            this.hasRes = false;
+        },
         chooseRepo: function(repo) {
             if (!repo.checked) {
                 this.repoTmp.push(repo);
@@ -138,10 +178,15 @@ var reopData = new Vue({
                 })
             }
         },
-        say: function(msg){
-            alert(msg)
-        },
-        show: function() {
+        teamStats: function() {
+            var self = this;
+            // console.log(self.repoTmp[0].repo);
+            // console.log(self.teamTmp);
+            self.type = 1;
+            if (self.repoTmp.length == 0 || self.teamTmp.length == 0){
+                tips.call(self, 'Please choose a repository and a team or member.', 'danger')
+                return;
+            }
             $('#myModal').modal('show')
         },
         showPending: function(repo){
@@ -194,27 +239,3 @@ var reopData = new Vue({
     }
 });
 
-
-// var teamData = new Vue({
-//     el: '#team-panel',
-//     data: {
-//     	count: 0,
-//         baseUrl: null,
-//         nextUrl: null,
-//         prevUrl: null,
-//         teams: []
-//     },
-
-//     created: function() {
-//         var self = this;
-//         // this.apiUrl = '/api/repositories/';
-//         get('/api/teams/').then(function(res) {
-//             var time = formatTime(+new Date(), 'Y-M-D');
-//             self.teams = res.results;
-//             self.count = res.count;
-//             self.nextUrl = res.next;
-//             self.prevUrl = res.previous;
-//             console.log(self.teams);
-//         });
-//     }
-// });
