@@ -30,6 +30,18 @@ function formatTime(timestamp, formater) {
 }
 
 
+function tips(msg, type, state) {
+    var self = this;
+    this.msg = msg;
+    this.errorMsg = msg;
+    this.alertType = type;
+    setTimeout(function() {
+        self.msg = '';
+        self.errorMsg = '';
+    }, 3000)
+}
+
+
 function get(url, data) {
     return $.ajax({
         type: "get",
@@ -58,24 +70,46 @@ var reopData = new Vue({
             nextUrl: null,
             prevUrl: null,
             teams: [],
-            checked: false
+        },
+        pendingData: {
+            count: 0,
+            baseUrl: null,
+            nextUrl: null,
+            prevUrl: null,
+            pendingPatchs: [],
         },
         repoTmp: [],
         teamTmp: [],
-        Repochecked: false,
-        repository_id: 0
+        // Repochecked: false,
+        // repository_id: 0,
+        pendingPatchs: [],
+        beginTime: '',
+        endTime: ''
     },
     watch: {
         repos: function(val) {
             var self = this;
             val.forEach(function(el, index) {
                 if (el.checked == undefined) {
-                    alert('1111')
                     var status = _.findIndex(self.repoTmp, function(o) {
                         return o.repository_id == el.repository_id;
                     })
                     val.$set(index, {
                         repository_id: el.repository_id,
+                        checked: status == -1 ? false: true
+                    })
+                }
+            })
+        },
+        teams: function(val) {
+            var self = this;
+            val.forEach(function(el, index) {
+                if (el.checked == undefined) {
+                    var status = _.findIndex(self.teamTmp, function(o) {
+                        return o.team_code == el.team_code;
+                    })
+                    val.$set(index, {
+                        team_code: el.team_code,
                         checked: status == -1 ? false: true
                     })
                 }
@@ -86,8 +120,7 @@ var reopData = new Vue({
         chooseRepo: function(repo) {
             if (!repo.checked) {
                 this.repoTmp.push(repo);
-                _.sortedUniq(this.repoTmp)
-                console.log(this.repoTmp[0])
+                _.sortedUniq(this.repoTmp);
             } else {
                 _.remove(this.repoTmp, function(el) {
                     return el.repository_id == repo.repository_id;
@@ -95,22 +128,42 @@ var reopData = new Vue({
             }
         },
         chooseTeam: function(team) {
-            console.log('123123')
-            console.log(team.team_code)
-            console.log('321321')
-            console.log(team.members)
-            if (!teamData.checked) {
+            if (!team.checked) {
                 this.teamTmp.push(team);
                 _.sortedUniq(this.teamTmp);
-                console.log(teamTmp)
+
             } else {
                 _.remove(this.teamTmp, function(el) {
-                    return el.unique_id == product.unique_id;
+                    return el.team_code == team.team_code;
                 })
             }
         },
         say: function(msg){
             alert(msg)
+        },
+        show: function() {
+            $('#myModal').modal('show')
+        },
+        showPending: function(repo){
+            var self = this;
+            var repository_id = {'repository_id': repo.id};
+            get('/api/stats/pending-patchs/', repository_id).then(function(res) {
+            self.pendingData.pendingPatchs = res.results;
+            self.pendingData.count = res.count;
+            self.pendingData.nextUrl = res.next;
+            self.pendingData.prevUrl = res.previous;
+            // console.log(self.pendingData.pendingPatchs)
+            $("#pending-patchs").toggle()
+            // bugs here
+            if ($("#p-btn" + repo.id.toString()).text() ==  "Show")
+                {
+                    $("#p-btn" + repo.id.toString()).text("Close");
+                }
+                else 
+                {
+                     $("#p-btn" + repo.id.toString()).text("Show");
+                }
+            });
         }
     },
     created: function() {
@@ -122,6 +175,12 @@ var reopData = new Vue({
             self.repoData.count = res.count;
             self.repoData.nextUrl = res.next;
             self.repoData.prevUrl = res.previous;
+            $('#start_date').datepicker({
+                defaultViewDate: time
+            });
+            $('#end_date').datepicker();
+            self.beginTime = time;
+            self.endTime = time;
         });
 
         get('/api/teams/').then(function(res) {
