@@ -45,7 +45,7 @@
             <div v-if="pendingData.count>0" transition="expand" v-cloak>
                 <!-- <div class="alert alert-warning" role="alert"> -->
                     <div class="col-md-12">
-                        <table class="table table-bordered">
+                        <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>Patch No.</th>
@@ -80,7 +80,6 @@
 
     <!-- ==================================================nav tab -->
     <h3>Teams</h3>
-    <hr>
     <ul class="nav nav-tabs" >
         <li class="active"><a data-toggle="tab" href="#home">Team Summary</a></li>
         <li v-for="team in teamData.teams"><a data-toggle="tab" href="#${team.team_name}" @click="setSelectedTeam(team.team_code)">${team.team_name}</a></li>
@@ -150,7 +149,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="teamModalLabel">Statistics</h4>
+                    <h4 class="modal-title" id="teamModalLabel">Summary</h4>
                 </div>
                 <div class="modal-body">
                          <table class="table ">
@@ -211,7 +210,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="memberModalLabel">Statistics</h4>
+                    <h4 class="modal-title" id="memberModalLabel">Summary</h4>
                 </div>
                 <div class="modal-body">
                          <table class="table">
@@ -267,7 +266,7 @@
         <h3 style="float:left">Cloesd Patchs</h3>
         <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
         <hr>
-        <table class="table table-bordered" >
+        <table class="table table-striped" >
             <thead>
                 <tr>
                     <th>Patch No.</th>
@@ -300,8 +299,8 @@
     <div v-if="category == 'openingPatchs'">
         <h3 style="float:left">Opening Patchs</h3>
         <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
-        <hr>
-        <table class="table table-bordered" >
+        <hr style="width:100%">
+        <table class="table table-striped" >
             <thead>
                 <tr>
                     <th>Patch No.</th>
@@ -332,10 +331,10 @@
     </div>
 
     <div v-if="category == 'updatedPatchs'">
-        <h3 style="float:left">Updated Patchs</h3>
+        <h3 style="float:left;">Updated Patchs</h3>
         <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
-        <hr>
-        <table class="table table-bordered" >
+        <hr style="width:100%">
+        <table class="table table-striped" >
             <thead>
                 <tr>
                     <th>Patch No.</th>
@@ -368,8 +367,8 @@
     <div v-if="category == 'commits'">
         <h3 style="float:left">Commits</h3>
         <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
-        <hr>
-        <table class="table table-bordered" >
+        <hr style="width:100%">
+        <table class="table table-striped" >
             <thead>
                 <tr>
                     <th>Patch No.</th>
@@ -394,8 +393,8 @@
     <div v-if="category == 'comments'">
         <h3 style="float:left">Comments</h3>
         <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
-        <hr>
-        <table class="table table-bordered" >
+        <hr style="width:100%">
+        <table class="table table-striped" >
             <thead>
                 <tr>
                     <th>Patch No.</th>
