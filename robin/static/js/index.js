@@ -379,8 +379,8 @@ var reopData = new Vue({
         },
         memberStats: function() {
             var self = this;
-            console.log(self.repoTmp[0].repo);
-            console.log(self.memberTmp[0].name);
+            // console.log(self.repoTmp[0].repo);
+            // console.log(self.memberTmp[0].name);
             self.type = 1;
             if (self.repoTmp.length == 0 || self.memberTmp.length == 0){
                 tips.call(self, 'Please choose a repository and a team or member.', 'danger')

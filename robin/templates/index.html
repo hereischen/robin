@@ -13,9 +13,9 @@
  -->
  <div v-if="!hasRes" transition="expand" v-cloak>
     <div class="page-header">
-          <h1>Dash Board</h1>
+          <h1>Dashboard</h1>
     </div>
-    <h2>Repositories</h2>
+    <h3>Repositories</h3>
     <div class="row">
         <div class="col-md-12">
             <table class="table table-striped">
@@ -79,10 +79,10 @@
  
 
     <!-- ==================================================nav tab -->
-    <h2>Teams</h2>
+    <h3>Teams</h3>
     <hr>
     <ul class="nav nav-tabs" >
-        <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+        <li class="active"><a data-toggle="tab" href="#home">Team Summary</a></li>
         <li v-for="team in teamData.teams"><a data-toggle="tab" href="#${team.team_name}" @click="setSelectedTeam(team.team_code)">${team.team_name}</a></li>
     </ul>
 
@@ -93,7 +93,6 @@
                     <tr>
                         <th>#</th>
                         <th>Team Name</th>
-                        <!-- <th>Team Code</th> -->
                         <th>Number of Members</th>
                     </tr>
                 </thead>
@@ -101,18 +100,14 @@
                     <tr v-for="team in teamData.teams">
                         <td class="left"><input type="checkbox" v-model="team.checked" @click="chooseTeam(team)"> ${teamData.teams.indexOf(team) + 1}</td>
                         <td>${team.team_name}</td>
-                        <!-- <td>${team.team_code}</td> -->
                         <td>${team.members.length}</td>
-                    <!--   <td>
-                          <button type="button" class="btn btn-primary" @click="settle(product)">查询</button>
-                      </td> -->
                     </tr>
                 </tbody>
             </table>
             <div class="alert alert-${alertType}" role="alert" v-show="msg.length >0" v-cloak>
             <p>${msg}</p>
             </div>
-            <button class="btn btn-primary" style="width: 100%;" v-on:click="teamStats()">show</button>
+            <button class="btn btn-primary" style="width: 100%;" v-on:click="teamStats()">Confirm</button>
         </div>
         <div v-for="team in teamData.teams" id="${team.team_name}" class="tab-pane fade">
             <div v-if="memberData.count>0">
@@ -134,14 +129,15 @@
                     </tr>
                 </tbody>
             </table>
-            </div>
-            <div v-else>
-            <div class="alert alert-warning" role="alert">This team has no members yet.</div>
-            </div>
             <div class="alert alert-${alertType}" role="alert" v-show="msg.length >0" v-cloak>
             <p>${msg}</p>
             </div>
-            <button class="btn btn-primary" style="width: 100%;" v-on:click="memberStats()">show</button>
+            <button class="btn btn-primary" style="width: 100%;" v-on:click="memberStats()">Confirm</button>
+            </div>
+
+            <div v-else>
+            <div class="alert alert-warning" role="alert">This team has no members yet.</div>
+            </div>
         </div>
     </div>
     <!-- ==================================================nav tab -->
@@ -157,12 +153,12 @@
                     <h4 class="modal-title" id="teamModalLabel">Statistics</h4>
                 </div>
                 <div class="modal-body">
-                         <table class="table">
+                         <table class="table ">
                          <!-- !!!!!! -->
                             <tr v-if="!settleAllState">
-                                <td>Repo Name:</td>
+                                <td><strong>Repo Name:</strong></td>
                                 <td style="text-align: left"><span v-for="item in repoTmp" style="margin-right: 5px;">${item.repo}</span></td>
-                                <td>Team Name:</td>
+                                <td><strong>Team Name:</strong></td>
                                 <td style="text-align: left"><span v-for="item in teamTmp" style="margin-right: 5px;">${item.team_name}</span>
                                 </td>
                             </tr>
@@ -170,11 +166,11 @@
                                 <p>所有商品</p>
                             </tr> -->
                             <tr>
-                                <td>Start From:</td>
+                                <td><strong>Start From:</strong></td>
                                 <td style="text-align: left">
                                     <input class="input" id="start_date" v-model="beginTime">
                                 </td>
-                                <td>End Until:</td>
+                                <td><strong>End Until:</strong></td>
                                 <td style="text-align: left">
                                     <input class="input" id="end_date" v-model="endTime">
                                 </td>
@@ -201,12 +197,12 @@
                     </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" @click="submitTeam">Team</button>
+                    <button type="button" class="btn btn-danger" @click="submitTeam">Submit</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
   <!-- ============================= -->
 
         <!-- memberModal -->
@@ -221,18 +217,18 @@
                          <table class="table">
                          <!-- !!!!!! -->
                             <tr v-if="!settleAllState">
-                                <td>Repo Name:</td>
+                                <td><strong>Repo Name:</strong></td>
                                 <td style="text-align: left"><span v-for="item in repoTmp" style="margin-right: 5px;">${item.repo}</span></td>
-                                <td>Member Name:</td>
+                                <td><strong>Member Name:</strong></td>
                                 <td style="text-align: left"><span v-for="item in memberTmp" style="margin-right: 5px;">${item.name}</span>
                                 </td>
                             </tr>
                             <tr>
-                                <td>Start From:</td>
+                                <td><strong>Start From:</strong></td>
                                 <td style="text-align: left">
                                     <input class="input" id="m_start_date" v-model="beginTime">
                                 </td>
-                                <td>End Until:</td>
+                                <td><strong>End Until:</strong></td>
                                 <td style="text-align: left">
                                     <input class="input" id="m_end_date" v-model="endTime">
                                 </td>
@@ -268,9 +264,9 @@
 <!-- ============================= res =============================-->
 <div v-if="hasRes" transition="expand" v-cloak>
     <div v-if="category == 'closedPatchs'">
-        <h2 style="float:left">Cloesd Patchs</h2>
+        <h3 style="float:left">Cloesd Patchs</h3>
         <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
-        <!-- <hr> -->
+        <hr>
         <table class="table table-bordered" >
             <thead>
                 <tr>
@@ -302,9 +298,9 @@
     </div>
 
     <div v-if="category == 'openingPatchs'">
-        <h2 style="float:left">Opening Patchs</h2>
+        <h3 style="float:left">Opening Patchs</h3>
         <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
-        <!-- <hr> -->
+        <hr>
         <table class="table table-bordered" >
             <thead>
                 <tr>
@@ -336,9 +332,9 @@
     </div>
 
     <div v-if="category == 'updatedPatchs'">
-        <h2 style="float:left">Updated Patchs</h2>
+        <h3 style="float:left">Updated Patchs</h3>
         <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
-        <!-- <hr> -->
+        <hr>
         <table class="table table-bordered" >
             <thead>
                 <tr>
@@ -370,9 +366,9 @@
     </div>
 
     <div v-if="category == 'commits'">
-        <h2 style="float:left">Commits</h2>
+        <h3 style="float:left">Commits</h3>
         <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
-        <!-- <hr> -->
+        <hr>
         <table class="table table-bordered" >
             <thead>
                 <tr>
@@ -396,9 +392,9 @@
     </div>
 
     <div v-if="category == 'comments'">
-        <h2 style="float:left">Comments</h2>
+        <h3 style="float:left">Comments</h3>
         <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
-        <!-- <hr> -->
+        <hr>
         <table class="table table-bordered" >
             <thead>
                 <tr>
