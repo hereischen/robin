@@ -135,10 +135,70 @@ var reopData = new Vue({
                 return;
             }
             console.log(this.category);
+            if (this.category == 'openingPatchs'){
+                get('/api/stats/opening-patchs', {
+                    repository_id: self.repoTmp[0].id,
+                    stats_type: self.type,
+                    kerbroes_id: self.teamTmp[0].members.join(','),
+                    start_date: self.beginTime,
+                    end_date: self.endTime
+                }).then(function(res) {
+                    self.resData = res,
+                    self.hasRes = true,
+                    $('#myModal').modal('hide');
+                    tips.call(self, 'Query Success', 'success');
+                });
+            }
+            if (this.category == 'updatedPatchs'){
+                get('/api/stats/updated-patchs', {
+                    repository_id: self.repoTmp[0].id,
+                    stats_type: self.type,
+                    kerbroes_id: self.teamTmp[0].members.join(','),
+                    start_date: self.beginTime,
+                    end_date: self.endTime
+                }).then(function(res) {
+                    self.resData = res,
+                    self.hasRes = true,
+                    $('#myModal').modal('hide');
+                    tips.call(self, 'Query Success', 'success');
+                });
+            }
             if (this.category == 'closedPatchs'){
                 get('/api/stats/closed-patchs', {
                     repository_id: self.repoTmp[0].id,
                     stats_type: self.type,
+                    kerbroes_id: self.teamTmp[0].members.join(','),
+                    start_date: self.beginTime,
+                    end_date: self.endTime
+                }).then(function(res) {
+                    console.log(res)
+                    console.log(self.category)
+                    self.resData = res,
+                    self.hasRes = true,
+                    $('#myModal').modal('hide');
+                    tips.call(self, 'Query Success', 'success');
+                });
+            }
+            if (this.category == 'commits'){
+                get('/api/stats/commits', {
+                    repository_id: self.repoTmp[0].id,
+                    stats_type: self.type,
+                    kerbroes_id: self.teamTmp[0].members.join(','),
+                    start_date: self.beginTime,
+                    end_date: self.endTime
+                }).then(function(res) {
+                    console.log(res)
+                    console.log(self.category)
+                    self.resData = res,
+                    self.hasRes = true,
+                    $('#myModal').modal('hide');
+                    tips.call(self, 'Query Success', 'success');
+                });
+            }
+            if (this.category == 'comments'){
+                get('/api/stats/comments', {
+                    repository_id: self.repoTmp[0].id,
+                    // stats_type: self.type,
                     kerbroes_id: self.teamTmp[0].members.join(','),
                     start_date: self.beginTime,
                     end_date: self.endTime

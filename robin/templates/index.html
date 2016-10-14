@@ -38,24 +38,6 @@
             </table>
         </div>
 
-     <!--    <div class="col-md-6">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Repo Owner</th>
-                        <th>Repo Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="team in teamData.teams">
-                        <td class="left"><input type="checkbox" v-model="team.checked" @click="chooseTeam(team)"> ${teamData.teams.indexOf(team) + 1}</td>
-                        <td>${team.team_name}</td>
-                        <td>${team.team_code}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div> -->
     </div> 
     <!-- class="row" -->
 
@@ -198,13 +180,17 @@
                                 </td>
                             </tr>
                         </table>
-                        <form>
-                          <input type="radio" name="category" value="commits" v-model="category" checked> 
-                          <span class="label label-default">Commits</span>
-                          <input type="radio" name="category" value="comments" v-model="category" > 
-                          <span class="label label-default">Comments</span>
+                        <form style="text-align: center">
+                          <input type="radio" name="category" value="openingPatchs" v-model="category" checked > 
+                          <span class="label label-primary" >Opening Patchs</span>
+                          <input type="radio" name="category" value="updatedPatchs" v-model="category" > 
+                          <span class="label label-primary">Updated Patchs</span>
                           <input type="radio" name="category" value="closedPatchs" v-model="category" > 
-                          <span class="label label-default">Closed Patchs</span>
+                          <span class="label label-primary">Closed Patchs</span>
+                          <input type="radio" name="category" value="commits" v-model="category" > 
+                          <span class="label label-primary">Commits</span>
+                          <input type="radio" name="category" value="comments" v-model="category" > 
+                          <span class="label label-primary">Comments</span>
                         </form>
 
                         <div class="alert alert-${alertType}" role="alert" v-show="msg.length >0" v-cloak>
@@ -215,11 +201,6 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-danger" @click="submit">Submit</button>
                 </div>
-<!--                 <div class="progress" v-if="progressWidth != '0%'">
-                    <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" :style="{width: progressWidth}">
-                        <span class="sr-only">40% Complete (success)</span>
-                    </div>
-                </div> -->
             </div>
         </div>
     </div>
@@ -228,14 +209,11 @@
 <!-- ============================= res =============================-->
 <div v-if="hasRes" transition="expand" v-cloak>
     <div v-if="category == 'closedPatchs'">
-        <h2>Cloesd Patchs</h2>
-        <hr>
-        <h5>${resData.count} in total</h5>
+        <h2 style="float:left">Cloesd Patchs</h2>
+        <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
+        <!-- <hr> -->
         <table class="table table-bordered" >
             <thead>
-                <!-- <tr>
-                <th>${resData.count} in total</th>
-                </tr> -->
                 <tr>
                     <th>Patch No.</th>
                     <th>Patch Title</th>
@@ -250,7 +228,6 @@
             </thead>
             <tbody>
                 <tr v-for="item in resData.results">
-                    <!-- <td class="left"><input type="checkbox" v-model="repo.checked" @click="chooseRepo(repo)"> ${repo.id}</td> -->
                     <td>${item.patch_number}</td>
                     <td>${item.patch_title}</td>
                     <td>${item.pull_merged}</td>
@@ -260,7 +237,128 @@
                     <td>${item.deletions}</td>
                     <td>${item.changed_files}</td>
                     <td>${item.closed_at}</td>
-                    <!-- <td><button id="p-btn${repo.id}" type="button" class="btn btn-xs btn-primary" @click="showPending(repo)">Show</button></td> -->
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div v-if="category == 'openingPatchs'">
+        <h2 style="float:left">Opening Patchs</h2>
+        <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
+        <!-- <hr> -->
+        <table class="table table-bordered" >
+            <thead>
+                <tr>
+                    <th>Patch No.</th>
+                    <th>Patch Title</th>
+                    <th>Is Merged</th>
+                    <th>Author</th>
+                    <th>Commits</th>
+                    <th>Additions</th>
+                    <th>Deletions</th>
+                    <th>Changed Files</th>
+                    <th>Created at</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in resData.results">
+                    <td>${item.patch_number}</td>
+                    <td>${item.patch_title}</td>
+                    <td>${item.pull_merged}</td>
+                    <td>${item.author}</td>
+                    <td>${item.commits}</td>
+                    <td>${item.additions}</td>
+                    <td>${item.deletions}</td>
+                    <td>${item.changed_files}</td>
+                    <td>${item.created_at}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div v-if="category == 'updatedPatchs'">
+        <h2 style="float:left">Updated Patchs</h2>
+        <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
+        <!-- <hr> -->
+        <table class="table table-bordered" >
+            <thead>
+                <tr>
+                    <th>Patch No.</th>
+                    <th>Patch Title</th>
+                    <th>Is Merged</th>
+                    <th>Author</th>
+                    <th>Commits</th>
+                    <th>Additions</th>
+                    <th>Deletions</th>
+                    <th>Changed Files</th>
+                    <th>Updated at</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in resData.results">
+                    <td>${item.patch_number}</td>
+                    <td>${item.patch_title}</td>
+                    <td>${item.pull_merged}</td>
+                    <td>${item.author}</td>
+                    <td>${item.commits}</td>
+                    <td>${item.additions}</td>
+                    <td>${item.deletions}</td>
+                    <td>${item.changed_files}</td>
+                    <td>${item.updated_at}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div v-if="category == 'commits'">
+        <h2 style="float:left">Commits</h2>
+        <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
+        <!-- <hr> -->
+        <table class="table table-bordered" >
+            <thead>
+                <tr>
+                    <th>Patch No.</th>
+                    <th>Sha</th>
+                    <th>Author</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in resData.results">
+                    <td>${item.patch_number}</td>
+                    <td>${item.sha}</td>
+                    <td>${item.author}</td>
+                    <td>${item.message}</td>
+                    <td>${item.date}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div v-if="category == 'comments'">
+        <h2 style="float:left">Comments</h2>
+        <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
+        <!-- <hr> -->
+        <table class="table table-bordered" >
+            <thead>
+                <tr>
+                    <th>Patch No.</th>
+                    <th>Comment ID</th>
+                    <th>Author</th>
+                    <th>Content</th>
+                    <th>Created at</th>
+                    <th>Updated at</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in resData.results">
+                    <td>${item.patch_number}</td>
+                    <td>${item.comment_id}</td>
+                    <td>${item.author}</td>
+                    <td>${item.body}</td>
+                    <td>${item.created_at}</td>
+                    <td>${item.updated_at}</td>
                 </tr>
             </tbody>
         </table>
