@@ -13,9 +13,9 @@
  -->
  <div v-if="!hasRes" transition="expand" v-cloak>
     <div class="page-header">
-          <h1>Repositories</h1>
+          <h1>Dash Board</h1>
     </div>
-    <h2>repos</h2>
+    <h2>Repositories</h2>
     <div class="row">
         <div class="col-md-12">
             <table class="table table-striped">
@@ -83,7 +83,7 @@
     <hr>
     <ul class="nav nav-tabs" >
         <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-        <li v-for="team in teamData.teams"><a data-toggle="tab" href="#${team.team_name}">${team.team_name}</a></li>
+        <li v-for="team in teamData.teams"><a data-toggle="tab" href="#${team.team_name}" @click="setSelectedTeam(team.team_code)">${team.team_name}</a></li>
     </ul>
 
     <div class="tab-content">
@@ -115,46 +115,46 @@
             <button class="btn btn-primary" style="width: 100%;" v-on:click="teamStats()">show</button>
         </div>
         <div v-for="team in teamData.teams" id="${team.team_name}" class="tab-pane fade">
-            <h3>Menu 1</h3>
-            <p>Some content in menu 1.</p>
+            <div v-if="memberData.count>0">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Kerbroes ID</th>
+                        <th>Github Account</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="member in memberData.members">
+                        <td class="left"><input type="checkbox" v-model="member.checked" @click="chooseMember(member)"> ${memberData.members.indexOf(member) + 1}</td>
+                        <td>${member.name}</td>
+                        <td>${member.kerbroes_id}</td>
+                        <td>${member.github_account}</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <div v-else>
+            <div class="alert alert-warning" role="alert">This team has no members yet.</div>
+            </div>
+            <div class="alert alert-${alertType}" role="alert" v-show="msg.length >0" v-cloak>
+            <p>${msg}</p>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" v-on:click="memberStats()">show</button>
         </div>
-<!--         <div id="${team.team_name}" class="tab-pane fade">
-            <h3>Menu 2</h3>
-            <p>Some content in menu 2.</p>
-        </div> -->
     </div>
     <!-- ==================================================nav tab -->
 
-
-
-
-<!--   <h2>Teams</h2>
-  <div class="panel-group" v-for="team in teamData.teams">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#collapse1"> ${team.team_name}</a>
-        </h4>
-      </div>
-      <div id="collapse1" class="panel-collapse collapse">
-        <ul class="list-group">
-          <li class="list-group-item">One</li>
-          <li class="list-group-item">Two</li>
-          <li class="list-group-item">Three</li>
-        </ul>
-        <div class="panel-footer">Footer</div>
-      </div>
-    </div>
-  </div> -->
   <!-- ============================= -->
 
-      <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <!-- teamModal -->
+    <div class="modal fade" id="teamModal" tabindex="-1" role="dialog" aria-labelledby="teamModalLabel">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Statistics</h4>
+                    <h4 class="modal-title" id="teamModalLabel">Statistics</h4>
                 </div>
                 <div class="modal-body">
                          <table class="table">
@@ -181,6 +181,7 @@
                             </tr>
                         </table>
                         <form style="text-align: center">
+                        <h4>
                           <input type="radio" name="category" value="openingPatchs" v-model="category" checked > 
                           <span class="label label-primary" >Opening Patchs</span>
                           <input type="radio" name="category" value="updatedPatchs" v-model="category" > 
@@ -191,6 +192,7 @@
                           <span class="label label-primary">Commits</span>
                           <input type="radio" name="category" value="comments" v-model="category" > 
                           <span class="label label-primary">Comments</span>
+                        </h4>
                         </form>
 
                         <div class="alert alert-${alertType}" role="alert" v-show="msg.length >0" v-cloak>
@@ -199,13 +201,70 @@
                     </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" @click="submit">Submit</button>
+                    <button type="button" class="btn btn-danger" @click="submitTeam">Team</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
   <!-- ============================= -->
+
+        <!-- memberModal -->
+    <div class="modal fade" id="memberModal" tabindex="-1" role="dialog" aria-labelledby="memberModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="memberModalLabel">Statistics</h4>
+                </div>
+                <div class="modal-body">
+                         <table class="table">
+                         <!-- !!!!!! -->
+                            <tr v-if="!settleAllState">
+                                <td>Repo Name:</td>
+                                <td style="text-align: left"><span v-for="item in repoTmp" style="margin-right: 5px;">${item.repo}</span></td>
+                                <td>Member Name:</td>
+                                <td style="text-align: left"><span v-for="item in memberTmp" style="margin-right: 5px;">${item.name}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Start From:</td>
+                                <td style="text-align: left">
+                                    <input class="input" id="m_start_date" v-model="beginTime">
+                                </td>
+                                <td>End Until:</td>
+                                <td style="text-align: left">
+                                    <input class="input" id="m_end_date" v-model="endTime">
+                                </td>
+                            </tr>
+                        </table>
+                        <form style="text-align: center">
+                        <h4>
+                          <input type="radio" name="category" value="openingPatchs" v-model="category" checked > 
+                          <span class="label label-primary" >Opening Patchs</span>
+                          <input type="radio" name="category" value="updatedPatchs" v-model="category" > 
+                          <span class="label label-primary">Updated Patchs</span>
+                          <input type="radio" name="category" value="closedPatchs" v-model="category" > 
+                          <span class="label label-primary">Closed Patchs</span>
+                          <input type="radio" name="category" value="commits" v-model="category" > 
+                          <span class="label label-primary">Commits</span>
+                          <input type="radio" name="category" value="comments" v-model="category" > 
+                          <span class="label label-primary">Comments</span>
+                        </h4>
+                        </form>
+
+                        <div class="alert alert-${alertType}" role="alert" v-show="msg.length >0" v-cloak>
+                            <p>${msg}</p>
+                        </div>
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" @click="submitMember">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- ============================= res =============================-->
 <div v-if="hasRes" transition="expand" v-cloak>
     <div v-if="category == 'closedPatchs'">

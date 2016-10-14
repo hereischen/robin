@@ -75,6 +75,13 @@ var reopData = new Vue({
             prevUrl: null,
             teams: [],
         },
+        memberData: {
+            count: 0,
+            baseUrl: null,
+            nextUrl: null,
+            prevUrl: null,
+            members: [],
+        },
         pendingData: {
             count: 0,
             baseUrl: null,
@@ -85,6 +92,8 @@ var reopData = new Vue({
         resData: {},
         repoTmp: [],
         teamTmp: [],
+        memberTmp: [],
+        selectedTeam: '',
         // Repochecked: false,
         // repository_id: 0,
         pendingPatchs: [],
@@ -120,10 +129,24 @@ var reopData = new Vue({
                     })
                 }
             })
+        },
+        members: function(val) {
+            var self = this;
+            val.forEach(function(el, index) {
+                if (el.checked == undefined) {
+                    var status = _.findIndex(self.memberTmp, function(o) {
+                        return o.kerbroes_id == el.kerbroes_id;
+                    })
+                    val.$set(index, {
+                        kerbroes_id: el.kerbroes_id,
+                        checked: status == -1 ? false: true
+                    })
+                }
+            })
         }
     },
     methods: {
-         submit: function() {
+         submitTeam: function() {
             var self = this;
             if (self.beginTime.length == 0 || self.endTime.length == 0) {
                 tips.call(self, 'Start and End dates are required.', 'danger')
@@ -145,7 +168,7 @@ var reopData = new Vue({
                 }).then(function(res) {
                     self.resData = res,
                     self.hasRes = true,
-                    $('#myModal').modal('hide');
+                    $('#teamModal').modal('hide');
                     tips.call(self, 'Query Success', 'success');
                 });
             }
@@ -159,7 +182,7 @@ var reopData = new Vue({
                 }).then(function(res) {
                     self.resData = res,
                     self.hasRes = true,
-                    $('#myModal').modal('hide');
+                    $('#teamModal').modal('hide');
                     tips.call(self, 'Query Success', 'success');
                 });
             }
@@ -175,7 +198,7 @@ var reopData = new Vue({
                     console.log(self.category)
                     self.resData = res,
                     self.hasRes = true,
-                    $('#myModal').modal('hide');
+                    $('#teamModal').modal('hide');
                     tips.call(self, 'Query Success', 'success');
                 });
             }
@@ -191,7 +214,7 @@ var reopData = new Vue({
                     console.log(self.category)
                     self.resData = res,
                     self.hasRes = true,
-                    $('#myModal').modal('hide');
+                    $('#teamModal').modal('hide');
                     tips.call(self, 'Query Success', 'success');
                 });
             }
@@ -207,7 +230,101 @@ var reopData = new Vue({
                     console.log(self.category)
                     self.resData = res,
                     self.hasRes = true,
-                    $('#myModal').modal('hide');
+                    $('#teamModal').modal('hide');
+                    tips.call(self, 'Query Success', 'success');
+                });
+            }
+        },
+        submitMember: function() {
+            var self = this;
+            if (self.beginTime.length == 0 || self.endTime.length == 0) {
+                tips.call(self, 'Start and End dates are required.', 'danger')
+                return;
+            }
+
+            if (+new Date(self.beginTime) > +new Date(self.endTime)) {
+                tips.call(self, 'Start date can not be later than the End date.', 'danger')
+                return;
+            }
+            // console.log(self.memberTmp);
+            // console.log(this.category);
+            var kerbroes_ids = [];
+                self.memberTmp.forEach(function(el) {
+                    kerbroes_ids.push(el.kerbroes_id)
+                })
+            if (this.category == 'openingPatchs'){
+                get('/api/stats/opening-patchs', {
+                    repository_id: self.repoTmp[0].id,
+                    stats_type: self.type,
+                    kerbroes_id: kerbroes_ids.join(','),
+                    start_date: self.beginTime,
+                    end_date: self.endTime
+                }).then(function(res) {
+                    self.resData = res,
+                    self.hasRes = true,
+                    $('#memberModal').modal('hide');
+                    tips.call(self, 'Query Success', 'success');
+                });
+            }
+            if (this.category == 'updatedPatchs'){
+                get('/api/stats/updated-patchs', {
+                    repository_id: self.repoTmp[0].id,
+                    stats_type: self.type,
+                    kerbroes_id: kerbroes_ids.join(','),
+                    start_date: self.beginTime,
+                    end_date: self.endTime
+                }).then(function(res) {
+                    self.resData = res,
+                    self.hasRes = true,
+                    $('#memberModal').modal('hide');
+                    tips.call(self, 'Query Success', 'success');
+                });
+            }
+            if (this.category == 'closedPatchs'){
+                get('/api/stats/closed-patchs', {
+                    repository_id: self.repoTmp[0].id,
+                    stats_type: self.type,
+                    kerbroes_id: kerbroes_ids.join(','),
+                    start_date: self.beginTime,
+                    end_date: self.endTime
+                }).then(function(res) {
+                    console.log(res)
+                    console.log(self.category)
+                    self.resData = res,
+                    self.hasRes = true,
+                    $('#memberModal').modal('hide');
+                    tips.call(self, 'Query Success', 'success');
+                });
+            }
+            if (this.category == 'commits'){
+                get('/api/stats/commits', {
+                    repository_id: self.repoTmp[0].id,
+                    stats_type: self.type,
+                    kerbroes_id: kerbroes_ids.join(','),
+                    start_date: self.beginTime,
+                    end_date: self.endTime
+                }).then(function(res) {
+                    console.log(res)
+                    console.log(self.category)
+                    self.resData = res,
+                    self.hasRes = true,
+                    $('#memberModal').modal('hide');
+                    tips.call(self, 'Query Success', 'success');
+                });
+            }
+            if (this.category == 'comments'){
+                get('/api/stats/comments', {
+                    repository_id: self.repoTmp[0].id,
+                    // stats_type: self.type,
+                    kerbroes_id: kerbroes_ids.join(','),
+                    start_date: self.beginTime,
+                    end_date: self.endTime
+                }).then(function(res) {
+                    console.log(res)
+                    console.log(self.category)
+                    self.resData = res,
+                    self.hasRes = true,
+                    $('#memberModal').modal('hide');
                     tips.call(self, 'Query Success', 'success');
                 });
             }
@@ -238,6 +355,17 @@ var reopData = new Vue({
                 })
             }
         },
+        chooseMember: function(member) {
+            if (!member.checked) {
+                this.memberTmp.push(member);
+                _.sortedUniq(this.memberTmp);
+
+            } else {
+                _.remove(this.memberTmp, function(el) {
+                    return el.kerbroes_id == member.kerbroes_id;
+                })
+            }
+        },
         teamStats: function() {
             var self = this;
             // console.log(self.repoTmp[0].repo);
@@ -247,7 +375,18 @@ var reopData = new Vue({
                 tips.call(self, 'Please choose a repository and a team or member.', 'danger')
                 return;
             }
-            $('#myModal').modal('show')
+            $('#teamModal').modal('show')
+        },
+        memberStats: function() {
+            var self = this;
+            console.log(self.repoTmp[0].repo);
+            console.log(self.memberTmp[0].name);
+            self.type = 1;
+            if (self.repoTmp.length == 0 || self.memberTmp.length == 0){
+                tips.call(self, 'Please choose a repository and a team or member.', 'danger')
+                return;
+            }
+            $('#memberModal').modal('show')
         },
         showPending: function(repo){
             var self = this;
@@ -268,6 +407,18 @@ var reopData = new Vue({
                 {
                      $("#p-btn" + repo.id.toString()).text("Show");
                 }
+            });
+        },
+        setSelectedTeam: function(selectedTeam){
+            var self = this;
+            self.selectedTeam = selectedTeam;
+            console.log(selectedTeam);
+            get('/api/members/',{ team_code: self.selectedTeam}
+                ).then(function(res) {
+            self.memberData.members = res.results;
+            self.memberData.count = res.count;
+            self.memberData.nextUrl = res.next;
+            self.memberData.prevUrl = res.previous;
             });
         }
     },
@@ -294,7 +445,12 @@ var reopData = new Vue({
             self.teamData.count = res.count;
             self.teamData.nextUrl = res.next;
             self.teamData.prevUrl = res.previous;
-            // console.log(self.teamData.teams);
+            $('#m_start_date').datepicker({
+                defaultViewDate: time
+            });
+            $('#m_end_date').datepicker();
+            self.beginTime = time;
+            self.endTime = time;
         });
     }
 });
