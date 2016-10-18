@@ -39,10 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'django_crontab',
+    'rest_framework',
     'commons',
     'members',
     'statistics',
     'crons',
+    'api',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -54,6 +56,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'commons.middleware.ExceptionHandlerMiddleware',
 ]
 
 ROOT_URLCONF = 'robin.urls'
@@ -61,7 +64,7 @@ ROOT_URLCONF = 'robin.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -89,7 +92,8 @@ DATABASES = {
         'PASSWORD': '1qaz@WSX',
         'HOST': 'localhost',
         'PORT': '3306',
-        # Set this to True to wrap each HTTP request in a transaction on this database.
+        # Set this to True to wrap each HTTP request in a transaction on this
+        # database.
         'ATOMIC_REQUESTS': True,
     },
 }
@@ -136,6 +140,10 @@ DATETIME_FORMAT = 'y-m-d H:i:s'
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
 
 LOGGING = {
     'version': 1,
@@ -201,5 +209,12 @@ CRONJOBS = [
     # ('15 2 * * *', 'your corn'),
 ]
 
-# Github access_token. API rate limit, https://developer.github.com/v3/#rate-limiting
-ACCESS_TOKEN = '1766285b6b303ecfbe97f201ed9e7d757f13335c'
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'robin.api.core.pagination.CustomPagination',
+    'PAGE_SIZE': 20,
+}
+
+# Github access_token. API rate limit,
+# https://developer.github.com/v3/#rate-limiting
+ACCESS_TOKEN = ''
