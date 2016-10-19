@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
@@ -20,10 +23,10 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'sn#rka1sc389=_ur2%hrejq@bo(&msjeof9-1)$4bb=t7o&kt='
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if DEBUG:
+    SECRET_KEY = 'sn#rka1sc389=_ur2%hrejq@bo(&msjeof9-1)$4bb=t7o&kt='
+else:
+    SECRET_KEY = os.environ['SECRET_KEY']
 
 ALLOWED_HOSTS = []
 
@@ -217,4 +220,7 @@ REST_FRAMEWORK = {
 
 # Github access_token. API rate limit,
 # https://developer.github.com/v3/#rate-limiting
-ACCESS_TOKEN = ''
+if DEBUG:
+    ACCESS_TOKEN = ''
+else:
+    SECRET_KEY = os.environ['SECRET_KEY']
