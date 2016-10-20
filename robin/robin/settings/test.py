@@ -4,7 +4,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-STATIC_ROOT = '/home/hachen/resources/static/robin'
+STATIC_ROOT = '/home/hachen/resources/robin/static/'
 
 SERVER_ALIAS = 'test'
 
