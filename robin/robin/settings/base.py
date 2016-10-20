@@ -206,7 +206,7 @@ LOGGING = {
 }
 
 CRONJOBS = [
-    # ('15 2 * * *', 'your corn'),
+    ('15 2 * * *', 'crons.crons.auto_load_pulls'),
 ]
 
 REST_FRAMEWORK = {

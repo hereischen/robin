@@ -10,6 +10,11 @@ SERVER_ALIAS = 'test'
 
 CRONTAB_DJANGO_SETTINGS_MODULE = 'robin.settings.test'
 
+STATICFILES_DIRS = (
+    os.path.join(ROOT_DIR, "static"),
+    STATIC_ROOT,
+)
+
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
