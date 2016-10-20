@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -9,10 +9,6 @@ STATIC_ROOT = '/home/hachen/resources/static/robin'
 SERVER_ALIAS = 'test'
 
 CRONTAB_DJANGO_SETTINGS_MODULE = 'robin.settings.test'
-
-STATICFILES_DIRS = STATICFILES_DIRS + (
-    STATIC_ROOT,
-)
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
