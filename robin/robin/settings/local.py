@@ -2,8 +2,6 @@ from .base import *
 
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
 
 SERVER_ALIAS = 'local'

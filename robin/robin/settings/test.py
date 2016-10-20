@@ -2,8 +2,6 @@ from .base import *
 
 DEBUG = True
 
-TEMPLATE_DEBUG = False
-
 ALLOWED_HOSTS = []
 
 STATIC_ROOT = '/home/hachen/resources/static/robin'
