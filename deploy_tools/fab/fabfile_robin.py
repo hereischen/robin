@@ -43,12 +43,13 @@ from contextlib import contextmanager
 DEBUG = False
 
 PROJECT_ASCII_NAME = '''\
- _            _
-(_) __ _  ___| |_ ___ _ __ _ __
-| |/ _` |/ _ | __/ _ | '__| '_ \
-| | (_| |  __| ||  __| |  | |_) |
-|_|\__, |\___|\__\___|_|  | .__/
-   |___/                  |_|
+ ________  ________  ________  ___  ________
+|\   __  \|\   __  \|\   __  \|\  \|\   ___  \
+\ \  \|\  \ \  \|\  \ \  \|\ /\ \  \ \  \\ \  \
+ \ \   _  _\ \  \\\  \ \   __  \ \  \ \  \\ \  \
+  \ \  \\  \\ \  \\\  \ \  \|\  \ \  \ \  \\ \  \
+   \ \__\\ _\\ \_______\ \_______\ \__\ \__\\ \__\
+    \|__|\|__|\|_______|\|_______|\|__|\|__| \|__|
 '''
 env.port = 22
 env.git_branch = 'master'
@@ -56,36 +57,25 @@ env.venv_name = '.env'
 env.guni_ip = '0.0.0.0'
 env.guni_port = 8108
 env.guni_workers = 1
-env.project = 'igeterp'
+env.project = 'robin'
 
-env.project_base = '/data/web/%s' % env.project
+env.project_base = '/home/hachen/projects/'
 env.remote_project_base = '/data/web/%s' % env.project
-env.project_root = '%s/luojilab_%s_project' % (env.project_base, env.project)
+env.project_root = '/home/hachen/projects/%s' % (env.project)
 
 env.settings = {
     'test': {
-        'hosts': ['python@192.168.100.30'],
-        'project_base': '/home/python/projects',
-        'project_root': '/home/python/projects/luojilab_%s_project' %
-                        env.project,
+        'hosts': ['root@10.66.8.100'],
+        'project_base': '/home/hachen/projects',
+        'project_root': '/home/hachen/projects/%s' % env.project,
         'django_settings': 'test',
-        'app_url': 'http://igeterp.dev.didatrip.com',
+        'app_url': 'http://10.66.8.100:8000',
     },
     'staging': {
-        'project_base': '/home/python/projects',
-        'project_root': '/home/python/projects/luojilab_%s_project' %
-                        env.project,
-        'hosts': ['www@182.92.113.113'],
-        'django_settings': 'staging',
     },
     'prod': {
-        'hosts': ['www@10.44.10.176'],
-        'django_settings': 'production',
-        'app_url': 'http://igeterp.luojilab.com',
     },
     'task': {
-        'hosts': ['igeterp@10.173.21.122'],
-        'django_settings': 'production',
     }
 }
 
@@ -162,7 +152,7 @@ def sync_code():
 def install_package():
     """Install third-party applications."""
     with _virtualenv():
-        run('pip install -r requirements.txt')
+        run('pip install -r requirements/%s.txt' % env.django_settings)
 
 
 def _collect_static():
