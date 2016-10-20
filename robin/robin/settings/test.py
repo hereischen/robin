@@ -10,8 +10,7 @@ SERVER_ALIAS = 'test'
 
 CRONTAB_DJANGO_SETTINGS_MODULE = 'robin.settings.test'
 
-STATICFILES_DIRS = (
-    os.path.join(ROOT_DIR, "static"),
+STATICFILES_DIRS = STATICFILES_DIRS + (
     STATIC_ROOT,
 )
 
