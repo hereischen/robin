@@ -223,4 +223,4 @@ REST_FRAMEWORK = {
 if DEBUG:
     ACCESS_TOKEN = ''
 else:
-    SECRET_KEY = os.environ['SECRET_KEY']
+    ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
