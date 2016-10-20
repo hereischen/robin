@@ -67,7 +67,7 @@ env.settings = {
     'test': {
         'hosts': ['root@10.66.8.100'],
         'project_base': '/home/hachen/projects',
-        'project_root': '/home/hachen/projects/%s' % env.project,
+        'project_root': '/home/hachen/projects',
         'django_settings': 'test',
         'app_url': 'http://10.66.8.100:8000',
     },
