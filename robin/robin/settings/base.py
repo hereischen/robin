@@ -142,7 +142,7 @@ DATETIME_FORMAT = 'y-m-d H:i:s'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
+    os.path.join(ROOT_DIR, "static"),
 )
 
 LOGGING = {
