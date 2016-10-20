@@ -23,10 +23,7 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-if DEBUG:
-    SECRET_KEY = 'sn#rka1sc389=_ur2%hrejq@bo(&msjeof9-1)$4bb=t7o&kt='
-else:
-    SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = 'sn#rka1sc389=_ur2%hrejq@bo(&msjeof9-1)$4bb=t7o&kt='
 
 ALLOWED_HOSTS = []
 
@@ -220,7 +217,5 @@ REST_FRAMEWORK = {
 
 # Github access_token. API rate limit,
 # https://developer.github.com/v3/#rate-limiting
-if DEBUG:
-    ACCESS_TOKEN = ''
-else:
-    ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
+
+ACCESS_TOKEN = 'd33c13dc9a6e73635dee7bbf7eb153b1d591620a'

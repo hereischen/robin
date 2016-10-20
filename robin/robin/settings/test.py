@@ -1,12 +1,12 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
 
-STATIC_ROOT = ''
+STATIC_ROOT = '/home/hachen/resources/static/robin'
 
 SERVER_ALIAS = 'test'
 
@@ -17,11 +17,15 @@ CRONTAB_DJANGO_SETTINGS_MODULE = 'robin.settings.test'
 
 DATABASES = {
     'default': {
+        # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': os.environ.get('DATABASE_HOST', ''),
-        'PORT': 8000,
-        'NAME': os.environ.get('DATABASE_NAME', ''),
-        'USER': os.environ.get('DATABASE_USER', ''),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD', ''),
-    }
+        'NAME': 'robin',
+        'USER': 'root',
+        'PASSWORD': 'redhat1qaz@WSX',
+        'HOST': '10.66.8.100',
+        'PORT': '3306',
+        # Set this to True to wrap each HTTP request in a transaction on this
+        # database.
+        'ATOMIC_REQUESTS': True,
+    },
 }
