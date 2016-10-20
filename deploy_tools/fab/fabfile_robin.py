@@ -70,7 +70,7 @@ env.settings = {
         'project_base': '/home/hachen/projects',
         'project_root': '/home/hachen/projects/%s' % env.project,
         'django_settings': 'test',
-        'app_url': 'http://10.66.8.100:8000',
+        'app_url': 'http://10.66.8.100:8108',
     },
     'staging': {
     },
