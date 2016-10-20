@@ -297,8 +297,8 @@ def _check_app_version():
     response = urllib.urlopen(env.app_url)
     headers = response.info()
     print ' HTTP STATUS: [%s]' % cyan(response.code, bold=True)
-    print ' APP VERSION: [%s]' % cyan(headers['Version'], bold=True)
-    print ' APP RELEASE: [%s]' % cyan(headers['Release-Date'], bold=True)
+    # print ' APP VERSION: [%s]' % cyan(headers['Version'], bold=True)
+    # print ' APP RELEASE: [%s]' % cyan(headers['Release-Date'], bold=True)
 
 
 # def _check_celery_worker():
