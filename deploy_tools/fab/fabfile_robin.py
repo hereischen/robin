@@ -61,7 +61,7 @@ env.guni_workers = 1
 env.project = 'robin'
 
 env.project_base = '/home/hachen/projects/'
-env.remote_project_base = '/data/web/%s' % env.project
+env.remote_project_base = '/home/hachen/projects/%s' % env.project
 env.project_root = '/home/hachen/projects/%s' % (env.project)
 
 env.settings = {
