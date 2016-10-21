@@ -29,7 +29,8 @@ def date_generartor():
     # 8 hours offset
     tz_offset = timedelta(hours=8)
     # since the very beginning of the yesterday local time(Beijing, China)
-    since = today - timedelta(days=60) - tz_offset  # for debug purpose, days=60 will be changed to 1 later
+    # for debug purpose, days=60 will be changed to 1 later
+    since = today - timedelta(days=1) - tz_offset
     # until the last secs of the yesterday local time(Beijing, China)
     until = today - timedelta(seconds=1) - tz_offset
     return since, until
@@ -59,8 +60,10 @@ def _create_comments(comments, comment_type, pull_db, members):
                                    author=comment['user']['login'],
                                    comment_type=comment_type,
                                    body=comment['body'],
-                                   created_at=str(utc2local_parser(comment['created_at']))[:-6],
-                                   updated_at=str(utc2local_parser(comment['updated_at']))[:-6],
+                                   created_at=str(utc2local_parser(
+                                       comment['created_at']))[:-6],
+                                   updated_at=str(utc2local_parser(
+                                       comment['updated_at']))[:-6],
                                    pull=pull_db
                                    )
 
@@ -81,12 +84,16 @@ def auto_load_commits_of_members():
         # print repository log
         for member in members:
             # print member
-            commits = repo.get_commits_by_email(member.rh_email, since, until, access_token=ACCESS_TOKEN)
+            commits = repo.get_commits_by_email(
+                member.rh_email, since, until, access_token=ACCESS_TOKEN)
             for commit in commits:
                 Commit.objects.create(sha=commit['sha'],
-                                      author=commit['commit']['author']['name'],
-                                      email=commit['commit']['author']['email'],
-                                      date=str(utc2local_parser(commit['commit']['author']['date']))[:-6],
+                                      author=commit['commit'][
+                                          'author']['name'],
+                                      email=commit['commit'][
+                                          'author']['email'],
+                                      date=str(utc2local_parser(
+                                          commit['commit']['author']['date']))[:-6],
                                       message=commit['commit']['message'],
                                       repository=repository
                                       )
@@ -111,14 +118,16 @@ def auto_load_pulls():
             # only pulls that pulled by members are count.
             if pull['user']['login'] in [member.github_account for member in members]:
                 # current pull request based on number.
-                pull = repo.get_pull_by_number(number=pull['number'], access_token=ACCESS_TOKEN)
+                pull = repo.get_pull_by_number(
+                    number=pull['number'], access_token=ACCESS_TOKEN)
 
                 if pull['state'] == 'closed':
                     pull['state'] = 0
                 if pull['state'] == 'open':
                     pull['state'] = 1
                 if pull['closed_at'] is not None:
-                    pull['closed_at'] = str(utc2local_parser(pull['closed_at']))[:-6]
+                    pull['closed_at'] = str(
+                        utc2local_parser(pull['closed_at']))[:-6]
 
                 pull_db = Pull.objects.create(pull_number=pull['number'],
                                               title=pull['title'],
@@ -127,24 +136,30 @@ def auto_load_pulls():
                                               pull_state=pull['state'],
                                               pull_merged=pull['merged'],
                                               comments=pull['comments'],
-                                              review_comments=pull['review_comments'],
+                                              review_comments=pull[
+                                                  'review_comments'],
                                               commits=pull['commits'],
                                               additions=pull['additions'],
                                               deletions=pull['deletions'],
-                                              changed_files=pull['changed_files'],
-                                              created_at=str(utc2local_parser(pull['created_at']))[:-6],
-                                              updated_at=str(utc2local_parser(pull['updated_at']))[:-6],
+                                              changed_files=pull[
+                                                  'changed_files'],
+                                              created_at=str(utc2local_parser(
+                                                  pull['created_at']))[:-6],
+                                              updated_at=str(utc2local_parser(
+                                                  pull['updated_at']))[:-6],
                                               closed_at=pull['closed_at'],
                                               repository=repository_db
                                               )
 
                 if pull_db.comments > 0:
-                    #  create issue's comments in db if it exists, witch is type 0
+                    # create issue's comments in db if it exists, witch is type
+                    # 0
                     comments = repo.get_issue_comments(pull['number'])
                     _create_comments(comments, 0, pull_db, members)
 
                 if pull_db.review_comments > 0:
-                    # create pull's comments in db if it exists, witch is type 1
+                    # create pull's comments in db if it exists, witch is type
+                    # 1
                     comments = repo.get_pull_comments(pull['number'])
                     _create_comments(comments, 1, pull_db, members)
                 if pull_db.commits > 0:
@@ -153,10 +168,14 @@ def auto_load_pulls():
                         # commits that commitd by members are count.
                         if commit['commit']['author']['email'] in [member.rh_email for member in members]:
                             Commit.objects.create(sha=commit['sha'],
-                                                  author=commit['commit']['author']['name'],
-                                                  email=commit['commit']['author']['email'],
-                                                  date=str(utc2local_parser(commit['commit']['author']['date']))[:-6],
-                                                  message=commit['commit']['message'],
+                                                  author=commit['commit'][
+                                                      'author']['name'],
+                                                  email=commit['commit'][
+                                                      'author']['email'],
+                                                  date=str(utc2local_parser(
+                                                      commit['commit']['author']['date']))[:-6],
+                                                  message=commit[
+                                                      'commit']['message'],
                                                   repository=repository_db,
                                                   pull=pull_db)
 
@@ -176,7 +195,10 @@ def auto_retrieve_bug_id():
     """
     load bug id into pull if pull.bug_id is null
     """
-    pulls_db = Pull.objects.filter(bug_id=None)
+    # after 90 days will not try to find the bug id, beacuse it was missing
+    days_ago = date.today() - timedelta(days=14)
+    pulls_db = Pull.objects.filter(
+        bug_id=None, created_at__gt=days_ago)
     regex = re.compile(r"id:(.*)", re.M | re.I)
     # first search bug_id in pull body
     for pull_db in pulls_db:
@@ -188,7 +210,8 @@ def auto_retrieve_bug_id():
 
         # if not in pull body serach from comments.
         if bug_id is None:
-            comments_db = Comment.objects.filter(pull=pull_db, comment_type=0, author=pull_db.author)
+            comments_db = Comment.objects.filter(
+                pull=pull_db, comment_type=0, author=pull_db.author)
             for comment_db in comments_db:
                 text = comment_db.body.encode("utf-8")
                 match = regex.search(text)
@@ -212,11 +235,13 @@ def auto_change_pull_state():
     for pull_db in pulls_db:
         # call github api
         repo = Repo(pull_db.repository.owner, pull_db.repository.repo)
-        pull = repo.get_pull_by_number(number=pull_db.pull_number, access_token=ACCESS_TOKEN)
+        pull = repo.get_pull_by_number(
+            number=pull_db.pull_number, access_token=ACCESS_TOKEN)
         if pull['state'] == 'closed':
             # if cloesed, change states
             pull_db.pull_state = 0
             pull_db.pull_merged = pull['merged']
+            pull_db.updated_at = str(utc2local_parser(pull['updated_at']))[:-6]
             pull_db.closed_at = str(utc2local_parser(pull['closed_at']))[:-6]
             pull_db.save()
 
