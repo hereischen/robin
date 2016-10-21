@@ -218,4 +218,4 @@ REST_FRAMEWORK = {
 # Github access_token. API rate limit,
 # https://developer.github.com/v3/#rate-limiting
 
-ACCESS_TOKEN = 'd33c13dc9a6e73635dee7bbf7eb153b1d591620a'
+ACCESS_TOKEN = ''

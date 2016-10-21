@@ -6,6 +6,8 @@ ALLOWED_HOSTS = []
 
 STATIC_ROOT = '/home/hachen/resources/robin/static/'
 
+KEY_ROOT = '/home/hachen/resources/robin/keys/'
+
 SERVER_ALIAS = 'test'
 
 CRONTAB_DJANGO_SETTINGS_MODULE = 'robin.settings.test'
@@ -28,3 +30,8 @@ DATABASES = {
         'ATOMIC_REQUESTS': True,
     },
 }
+
+# Github access_token. API rate limit,
+# https://developer.github.com/v3/#rate-limiting
+with open(KEY_ROOT + 'access_token.txt') as f:
+    ACCESS_TOKEN = f.read().strip()
