@@ -4,7 +4,7 @@ import iso8601
 import pytz
 
 
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 from django.db import transaction as dbtransaction
 from commons import common_helpers
 from members.models import Member
@@ -43,10 +43,6 @@ def utc2local_parser(date):
     return iso8601.parse_date(date).astimezone(pytz.timezone(TIME_ZONE))
 
 
-def _test(content):
-    pass
-
-
 def _create_comments(comments, comment_type, pull_db, members):
     """
     creates comments of a pull.
@@ -56,6 +52,7 @@ def _create_comments(comments, comment_type, pull_db, members):
     for comment in comments:
         # comments that commented by members are count.
         if comment['user']['login'] in [member.github_account for member in members]:
+            # if comment['id'] in [Comment.objects.filter(pull=pull_db)]
             Comment.objects.create(comment_id=comment['id'],
                                    author=comment['user']['login'],
                                    comment_type=comment_type,
@@ -180,15 +177,6 @@ def auto_load_pulls():
                                                   pull=pull_db)
 
 
-# def _regex_bug_id(content, regex):
-#     regex, res = regex, None
-#     text = content.encode("utf-8")
-#     match = regex.search(text)
-#     if match:
-#         res = re.findall(r"\d+", match.groups()[0])[0]
-#     return res
-
-
 # todo discuss later!!!
 @dbtransaction.atomic
 def auto_retrieve_bug_id():
@@ -217,30 +205,98 @@ def auto_retrieve_bug_id():
                 match = regex.search(text)
                 if match:
                     bug_id = re.findall(r"\d+", match.groups()[0])[0]
-            # print bug_id
-        # print bug_id, pull_db, '*' * 24
+
         pull_db.bug_id = bug_id
         pull_db.save()
 
 
 # todo change pull state when it is closed, or updated
 # also need to change stats eg. commits, additions..
+# after PR created, new comments and review comments will be add into db,
+# when PR was updated.
 @dbtransaction.atomic
 def auto_change_pull_state():
     """
     change pull state when it is closed or updated
     """
     # pull requests are still open
+    members = Member.objects.all()
     pulls_db = Pull.objects.filter(pull_state=1)
     for pull_db in pulls_db:
         # call github api
         repo = Repo(pull_db.repository.owner, pull_db.repository.repo)
         pull = repo.get_pull_by_number(
             number=pull_db.pull_number, access_token=ACCESS_TOKEN)
+
+        if ((pull_db.updated_at != datetime.strptime(
+                str(utc2local_parser(
+                    pull['updated_at']))[:-6], '%Y-%m-%d %H:%M:%S')) and (pull['state'] == 'open')):
+            # if a pull request is updated, it could have new comments and
+            # commits
+            # update basic pull info in db
+            pull_db.body = pull['body']
+            pull_db.pull_merged = pull['merged']
+            pull_db.comments = pull['comments']
+            pull_db.review_comments = pull['review_comments']
+            pull_db.commits = pull['commits']
+            pull_db.additions = pull['additions']
+            pull_db.deletions = pull['deletions']
+            pull_db.changed_files = pull['changed_files']
+            pull_db.updated_at = str(utc2local_parser(pull['updated_at']))[:-6]
+            pull_db.save()
+            # update comment info of this pull
+            comments_db = Comment.objects.filter(pull=pull_db)
+            if pull_db.comments > 0:
+                # create issue's comments in db if it exists, witch is type
+                # 0
+                comments = repo.get_issue_comments(pull['number'])
+                new_comments = (set([comment['id'] for comment in comments]) -
+                                set([comment_db.comment_id for comment_db in comments_db]))
+                for comment in comments:
+                    if comment['id'] in new_comments:
+                        _create_comments(comments, 0, pull_db, members)
+
+            if pull_db.review_comments > 0:
+                # create pull's comments in db if it exists, witch is type
+                # 1
+                comments = repo.get_pull_comments(pull['number'])
+                new_comments = (set([comment['id'] for comment in comments]) -
+                                set([comment_db.comment_id for comment_db in comments_db]))
+                for comment in comments:
+                    if comment['id'] in new_comments:
+                        _create_comments(comments, 1, pull_db, members)
+            # update commit info of this pull
+            if pull_db.commits > 0:
+                commits_db = Commit.objects.filter(pull=pull_db)
+                commits = repo.get_pull_commits(pull['number'])
+                new_commits = (set([commit['sha'] for commit in commits]) -
+                               set([commit_db.sha for commit_db in commits_db]))
+                for commit in new_commits:
+                        # commits that commitd by members are count.
+                    if commit['commit']['author']['email'] in [member.rh_email for member in members]:
+                        Commit.objects.create(sha=commit['sha'],
+                                              author=commit['commit'][
+                                                  'author']['name'],
+                                              email=commit['commit'][
+                                                  'author']['email'],
+                                              date=str(utc2local_parser(
+                                                  commit['commit']['author']['date']))[:-6],
+                                              message=commit[
+                                                  'commit']['message'],
+                                              repository=pull_db.repository,
+                                              pull=pull_db)
+
         if pull['state'] == 'closed':
-            # if cloesed, change states
+            # if cloesed, change states that might be changed.
+            pull_db.body = pull['body']
             pull_db.pull_state = 0
             pull_db.pull_merged = pull['merged']
+            pull_db.comments = pull['comments']
+            pull_db.review_comments = pull['review_comments']
+            pull_db.commits = pull['commits']
+            pull_db.additions = pull['additions']
+            pull_db.deletions = pull['deletions']
+            pull_db.changed_files = pull['changed_files']
             pull_db.updated_at = str(utc2local_parser(pull['updated_at']))[:-6]
             pull_db.closed_at = str(utc2local_parser(pull['closed_at']))[:-6]
             pull_db.save()
