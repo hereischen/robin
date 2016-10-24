@@ -28,6 +28,7 @@ class Member(Timestampable, models.Model):
     kerbroes_id = models.CharField(max_length=32, unique=True, verbose_name='Kerbroes ID')
     rh_email = models.EmailField(unique=True, verbose_name='RedHat email')
     github_account = models.CharField(max_length=32, unique=True, verbose_name='GitHub account')
+    serving = models.BooleanField(default=True, verbose_name='on the job')
     team = models.ForeignKey('Team', related_name='members',verbose_name=u'team')
 
     class Meta:
