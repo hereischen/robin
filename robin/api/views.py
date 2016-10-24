@@ -8,10 +8,7 @@ from statistics.models import Repository, Pull, Commit, Comment
 from members.models import Team, Member
 from .serializers import (RepositorySerializer,
                           TeamSerializer,
-                          # OpeningPatchSerializer,
-                          # ClosedPatchSerializer,
                           PendingSerializer,
-                          # CommitStatsSerializer,
                           BasesStatsSerializer,
                           CommentStatsSerializer,
                           MemberSerializer,)
@@ -76,20 +73,6 @@ class TeamListView(APIView):
         result_page = paginator.paginate_queryset(teams, request)
         serializer = TeamSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
-
-
-# class MemberListView(APIView):
-#     """
-#     returns all the tracked teams
-#     """
-
-#     def get(self, request, team_code, format=None):
-#         # Returns a JSON response with a listing of Team objects
-#         members = Member.objects.filter(team_code=team_code)
-#         paginator = PageNumberPagination()
-#         result_page = paginator.paginate_queryset(members, request)
-#         serializer = MemberSerializer(result_page, many=True)
-#         return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(['GET'])

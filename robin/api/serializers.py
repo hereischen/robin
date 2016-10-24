@@ -60,38 +60,6 @@ class CommentStatsSerializer(serializers.Serializer):
         fields = ('repository_id', 'kerbroes_id',
                   'query_start_date', 'query_end_date')
 
-# class ClosedPatchSerializer(BasesStatsSerializer):
-#     pass
-
-#     class Meta(BasesStatsSerializer.Meta):
-#         pass
-
-
-# class OpeningPatchSerializer(serializers.Serializer):
-#     stats_type = serializers.ChoiceField(choices=STATS_TYPE, required=True)
-#     repository_id = serializers.IntegerField(required=True)
-#     team_code = serializers.CharField(required=False)
-#     kerbroes_id = serializers.CharField(required=False)
-#     start_date = serializers.DateField(required=True)
-#     end_date = serializers.DateField(required=True)
-
-#     class Meta:
-#         fields = ('repository_id', 'stats_type', 'team_code',
-#                   'kerbroes_id', 'query_start_date', 'query_end_date')
-
-
-# class CommitStatsSerializer(serializers.Serializer):
-#     stats_type = serializers.ChoiceField(choices=STATS_TYPE, required=True)
-#     repository_id = serializers.IntegerField(required=True)
-#     team_code = serializers.CharField(required=False)
-#     kerbroes_id = serializers.CharField(required=False)
-#     start_date = serializers.DateField(required=True)
-#     end_date = serializers.DateField(required=True)
-
-#     class Meta:
-#         fields = ('repository_id', 'stats_type', 'team_code',
-#                   'kerbroes_id', 'query_start_date', 'query_end_date')
-
 
 class PendingSerializer(serializers.Serializer):
     repository_id = serializers.IntegerField(required=False)
