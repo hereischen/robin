@@ -50,6 +50,7 @@
                                 <tr>
                                     <th>Patch No.</th>
                                     <th>Title</th>
+                                    <th>Bug ID</th>
                                     <th>Author</th>
                                     <th>Last Updated</th>
                                     <th>Total Pending</th>
@@ -59,6 +60,7 @@
                                 <tr v-for="pendingPatch in pendingData.pendingPatchs">
                                     <td>${pendingPatch.patch_number}</td>
                                     <td>${pendingPatch.patch_title}</td>
+                                    <td>${pendingPatch.bug_id}</td>
                                     <td>${pendingPatch.author}</td>
                                     <td>${pendingPatch.last_updated} day(s)</td>
                                     <td>${pendingPatch.total_pending} day(s)</td>
@@ -271,6 +273,7 @@
                 <tr>
                     <th>Patch No.</th>
                     <th>Patch Title</th>
+                    <th>Bug ID</th>
                     <th>Is Merged</th>
                     <th>Author</th>
                     <th>Commits</th>
@@ -284,6 +287,7 @@
                 <tr v-for="item in resData.results">
                     <td>${item.patch_number}</td>
                     <td>${item.patch_title}</td>
+                    <td>${item.bug_id}</td>
                     <td>${item.pull_merged}</td>
                     <td>${item.author}</td>
                     <td>${item.commits}</td>
@@ -305,6 +309,7 @@
                 <tr>
                     <th>Patch No.</th>
                     <th>Patch Title</th>
+                    <th>Bug ID</th>
                     <th>Is Merged</th>
                     <th>Author</th>
                     <th>Commits</th>
@@ -318,6 +323,7 @@
                 <tr v-for="item in resData.results">
                     <td>${item.patch_number}</td>
                     <td>${item.patch_title}</td>
+                    <td>${item.bug_id}</td>
                     <td>${item.pull_merged}</td>
                     <td>${item.author}</td>
                     <td>${item.commits}</td>
@@ -339,6 +345,7 @@
                 <tr>
                     <th>Patch No.</th>
                     <th>Patch Title</th>
+                    <th>Bug ID</th>
                     <th>Is Merged</th>
                     <th>Author</th>
                     <th>Commits</th>
@@ -352,6 +359,7 @@
                 <tr v-for="item in resData.results">
                     <td>${item.patch_number}</td>
                     <td>${item.patch_title}</td>
+                    <td>${item.bug_id}</td>
                     <td>${item.pull_merged}</td>
                     <td>${item.author}</td>
                     <td>${item.commits}</td>

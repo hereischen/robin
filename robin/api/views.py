@@ -116,6 +116,7 @@ def opening_patchs(request):
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
                                     'patch_title': pull.title,
+                                    'bug_id': pull.bug_id,
                                     'author': member.kerbroes_id,
                                     'pull_merged': pull.pull_merged,
                                     'commits': pull.commits,
@@ -152,6 +153,7 @@ def closed_patchs(request):
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
                                     'patch_title': pull.title,
+                                    'bug_id': pull.bug_id,
                                     'author': member.kerbroes_id,
                                     'pull_merged': pull.pull_merged,
                                     'commits': pull.commits,
@@ -188,6 +190,7 @@ def updated_patchs(request):
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
                                     'patch_title': pull.title,
+                                    'bug_id': pull.bug_id,
                                     'author': member.kerbroes_id,
                                     'pull_merged': pull.pull_merged,
                                     'commits': pull.commits,
@@ -251,6 +254,7 @@ def pending_patchs(request):
                 last_updated = today - pull.updated_at
                 details.append({'patch_number': pull.pull_number,
                                 'patch_title': pull.title,
+                                'bug_id': pull.bug_id,
                                 'author': member.kerbroes_id,
                                 'total_pending': total_pending.days,
                                 'last_updated': last_updated.days,
