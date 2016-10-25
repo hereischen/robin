@@ -95,6 +95,7 @@ DATABASES = {
         # Set this to True to wrap each HTTP request in a transaction on this
         # database.
         'ATOMIC_REQUESTS': True,
+        'OPTIONS': {'charset': 'utf8mb4'},
     },
 }
 
@@ -212,7 +213,7 @@ CRONJOBS = [
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'DEFAULT_PAGINATION_CLASS': 'robin.api.core.pagination.CustomPagination',
-    'PAGE_SIZE': 20,
+    'PAGE_SIZE': 100,
 }
 
 # Github access_token. API rate limit,

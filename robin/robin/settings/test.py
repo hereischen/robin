@@ -28,6 +28,7 @@ DATABASES = {
         # Set this to True to wrap each HTTP request in a transaction on this
         # database.
         'ATOMIC_REQUESTS': True,
+        'OPTIONS': {'charset': 'utf8mb4'},
     },
 }
 

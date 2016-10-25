@@ -1,0 +1,2 @@
+ALTER TABLE robin.statistics_comment CHANGE body body Text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+ALTER TABLE robin.statistics_pull CHANGE body body Text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
