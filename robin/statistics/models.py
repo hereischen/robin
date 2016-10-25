@@ -45,7 +45,7 @@ class Pull(Timestampable, models.Model):
     """
     Defines fields of an PullRequest.
     """
-    pull_number = models.IntegerField(unique=True, verbose_name='pull request number')
+    pull_number = models.IntegerField(verbose_name='pull request number')
     title = models.CharField(max_length=256, verbose_name='pull request title')
     author = models.CharField(max_length=32, verbose_name='pull request by')
 
@@ -74,6 +74,7 @@ class Pull(Timestampable, models.Model):
     class Meta:
         verbose_name = _('pull_request')
         verbose_name_plural = _('pull_requests')
+        unique_together = ('pull_number', 'repository')
 
     def __unicode__(self):
         return str(self.pull_number)
