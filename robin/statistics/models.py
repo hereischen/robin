@@ -84,7 +84,7 @@ class Commit(Timestampable, models.Model):
     """
     Defines fields of a commit.
     """
-    sha = models.CharField(max_length=64, unique=True, db_index=True, verbose_name='git commit sha')
+    sha = models.CharField(max_length=64, db_index=True, verbose_name='git commit sha')
     author = models.CharField(max_length=32, verbose_name='commit author')  # github login
     email = models.EmailField(verbose_name='commit email')
     date = models.DateTimeField(verbose_name='commit date')
@@ -99,6 +99,7 @@ class Commit(Timestampable, models.Model):
     class Meta:
         verbose_name = _('commit')
         verbose_name_plural = _('commits')
+        unique_together = ('sha', 'repository')
 
     def __unicode__(self):
         return self.sha
