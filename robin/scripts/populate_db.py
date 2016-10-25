@@ -8,7 +8,7 @@ print os.path.join(ROOT_DIR, 'team_member_data.csv')
 
 
 def populate_members():
-    team = Team.objects.get_or_create(team_code='kvm', team_name='KVM QE')[0]
+    team = Team.objects.get_or_create(team_code='kvm', team_name='KVM_QE')[0]
     print 'created team : %s' % team
 
     with open(os.path.join(ROOT_DIR, 'team_member_data.csv')) as csvfile:
