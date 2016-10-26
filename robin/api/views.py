@@ -282,13 +282,14 @@ def comment_stats(request):
                 comments = Comment.objects.filter(author=member.github_account, comment_type=1,
                                                   created_at__range=(start_date, end_date), pull__repository=repo)
                 for comment in comments:
-                    details.append({'comment_id': comment.comment_id,
-                                    'patch_number': comment.pull.pull_number,
-                                    'author': member.kerbroes_id,
-                                    'body': comment.body,
-                                    'created_at': comment.created_at,
-                                    'updated_at': comment.updated_at,
-                                    })
+                    if comment.author != comment.pull.author:
+                        details.append({'comment_id': comment.comment_id,
+                                        'patch_number': comment.pull.pull_number,
+                                        'author': member.kerbroes_id,
+                                        'body': comment.body,
+                                        'created_at': comment.created_at,
+                                        'updated_at': comment.updated_at,
+                                        })
 
             response = _paginate_response(details, request)
             return response
