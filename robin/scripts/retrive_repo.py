@@ -135,7 +135,7 @@ def auto_retrieve_bug_id():
     load bug id into pull if pull.bug_id is null
     """
     # after 90 days will not try to find the bug id, beacuse it was missing
-    pulls_db = Pull.objects.filter(id=467)
+    pulls_db = Pull.objects.filter(bug_id=None)
     regex = re.compile(r"id:(.*)", re.M | re.I)
     # first search bug_id in pull body
     for pull_db in pulls_db:
