@@ -12,7 +12,7 @@ Description
 0.0.2
 -----
  - New: new logging in views
- - Fix: review comment will not count pull author’s own commment
+ - Fix: review comment will not count pull author’s own comment
 
 0.0.1
 -----
