@@ -1,0 +1,23 @@
+Changelog
+=========
+
+Description
+-----------
+ - New: 添加新功能
+ - Improvement: 增强已有功能
+ - Fix: 修正Bug
+ - Deprecated: 弃用已有功能
+ - Removed: 删除已有功能
+
+0.0.2
+-----
+ - New: new logging in views
+ - Fix: review comment will not count pull author’s own commment
+
+0.0.1
+-----
+ - New: allowing view how many patches, commits, comments send by a team
+	member within a certain period of a repo 
+
+
+
