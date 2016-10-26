@@ -99,7 +99,7 @@ class Commit(Timestampable, models.Model):
     class Meta:
         verbose_name = _('commit')
         verbose_name_plural = _('commits')
-        unique_together = ('sha', 'repository')
+        unique_together = ('sha', 'pull')
 
     def __unicode__(self):
         return self.sha
