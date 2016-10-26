@@ -1,4 +1,7 @@
-from datetime import datetime, date
+import logging
+
+
+from datetime import datetime
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
@@ -13,6 +16,8 @@ from .serializers import (RepositorySerializer,
                           CommentStatsSerializer,
                           MemberSerializer,)
 from commons.exceptions import APIError
+
+logger = logging.getLogger(__name__)
 
 
 def _paginate_response(data, request):
@@ -77,9 +82,11 @@ class TeamListView(APIView):
 
 @api_view(['GET'])
 def member_list(request):
+    logger.info('[member_list] Received data : %s' % request.query_params)
     if request.method == 'GET':
         serializer = MemberSerializer(data=request.query_params)
         if serializer.is_valid():
+            logger.info('[member_list] Received data is valid.')
             details = []
             team = Team.objects.get(team_code=serializer.validated_data['team_code'])
             members = Member.objects.filter(team=team)
@@ -97,9 +104,11 @@ def member_list(request):
 
 @api_view(['GET'])
 def opening_patchs(request):
+    logger.info('[opening_patchs] Received data : %s' % request.query_params)
     if request.method == 'GET':
         serializer = BasesStatsSerializer(data=request.query_params)
         if serializer.is_valid():
+            logger.info('[opening_patchs] Received data is valid.')
             start_date = serializer.validated_data['start_date']
             end_date = serializer.validated_data['end_date']
 
@@ -134,9 +143,11 @@ def opening_patchs(request):
 
 @api_view(['GET'])
 def closed_patchs(request):
+    logger.info('[closed_patchs] Received data : %s' % request.query_params)
     if request.method == 'GET':
         serializer = BasesStatsSerializer(data=request.query_params)
         if serializer.is_valid():
+            logger.info('[closed_patchs] Received data is valid.')
             start_date = serializer.validated_data['start_date']
             end_date = serializer.validated_data['end_date']
 
@@ -171,9 +182,11 @@ def closed_patchs(request):
 
 @api_view(['GET'])
 def updated_patchs(request):
+    logger.info('[updated_patchs] Received data : %s' % request.query_params)
     if request.method == 'GET':
         serializer = BasesStatsSerializer(data=request.query_params)
         if serializer.is_valid():
+            logger.info('[updated_patchs] Received data is valid.')
             start_date = serializer.validated_data['start_date']
             end_date = serializer.validated_data['end_date']
 
@@ -208,9 +221,11 @@ def updated_patchs(request):
 
 @api_view(['GET'])
 def commit_stats(request):
+    logger.info('[commit_stats] Received data : %s' % request.query_params)
     if request.method == 'GET':
         serializer = BasesStatsSerializer(data=request.query_params)
         if serializer.is_valid():
+            logger.info('[commit_stats] Received data is valid.')
             start_date = serializer.validated_data['start_date']
             end_date = serializer.validated_data['end_date']
 
@@ -241,9 +256,11 @@ def commit_stats(request):
 
 @api_view(['GET'])
 def pending_patchs(request):
+    logger.info('[pending_patchs] Received data : %s' % request.query_params)
     if request.method == 'GET':
         serializer = PendingSerializer(data=request.query_params)
         if serializer.is_valid():
+            logger.info('[pending_patchs] Received data is valid.')
             details = []
             repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
             pulls = Pull.objects.filter(repository=repo, pull_state=1)
@@ -268,9 +285,11 @@ def pending_patchs(request):
 
 @api_view(['GET'])
 def comment_stats(request):
+    logger.info('[comment_stats] Received data : %s' % request.query_params)
     if request.method == 'GET':
         serializer = CommentStatsSerializer(data=request.query_params)
         if serializer.is_valid():
+            logger.info('[comment_stats] Received data is valid.')
             start_date = serializer.validated_data['start_date']
             end_date = serializer.validated_data['end_date']
 
