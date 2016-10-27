@@ -41,6 +41,12 @@ class Repository(Timestampable, models.Model):
         return ('/'.join([self.owner, self.repo]))
 
 
+class PullManager(models.Manager):
+
+    def is_exist(self, pull_number, repo):
+        return True if self.get_queryset().filter(pull_number=pull_number, repository=repo) else False
+
+
 class Pull(Timestampable, models.Model):
     """
     Defines fields of an PullRequest.
@@ -70,6 +76,7 @@ class Pull(Timestampable, models.Model):
     # comments = jsonfield.JSONField(verbose_name=u'issue comments')
     # ForeignKeys:
     repository = models.ForeignKey('Repository', verbose_name='repository')
+    objects = PullManager()
 
     class Meta:
         verbose_name = _('pull_request')
@@ -105,6 +112,12 @@ class Commit(Timestampable, models.Model):
         return self.sha
 
 
+class CommentManager(models.Manager):
+
+    def is_exist(self, comment_id):
+        return True if self.get_queryset().filter(comment_id=comment_id) else False
+
+
 class Comment(Timestampable, models.Model):
     """
     Defines fields of a comment.
@@ -118,6 +131,7 @@ class Comment(Timestampable, models.Model):
 
     # ForeignKeys:
     pull = models.ForeignKey('Pull', null=True, verbose_name='pull request')
+    objects = CommentManager()
 
     class Meta:
         verbose_name = _('comment')
