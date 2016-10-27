@@ -53,17 +53,24 @@ def _create_comments(comments, comment_type, pull_db, members):
     for comment in comments:
         # comments that commented by members are count.
         if comment['user']['login'] in [member.github_account for member in members]:
-            # if comment['id'] in [Comment.objects.filter(pull=pull_db)]
-            Comment.objects.get_or_create(comment_id=comment['id'],
-                                          author=comment['user']['login'],
-                                          comment_type=comment_type,
-                                          body=comment['body'],
-                                          created_at=str(utc2local_parser(
-                                              comment['created_at']))[:-6],
-                                          updated_at=str(utc2local_parser(
-                                              comment['updated_at']))[:-6],
-                                          pull=pull_db
-                                          )
+            if Comment.objects.is_exist(comment['id']):
+                pass
+                # comment_db = Comment.objects.get(comment_id=comment['id'])
+                # comment_db.body = comment['body']
+                # comment_db.updated_at = str(utc2local_parser(
+                #     comment['updated_at']))[:-6]
+                # comment_db.save()
+            else:
+                Comment.objects.create(comment_id=comment['id'],
+                                       author=comment['user']['login'],
+                                       comment_type=comment_type,
+                                       body=comment['body'],
+                                       created_at=str(utc2local_parser(
+                                           comment['created_at']))[:-6],
+                                       updated_at=str(utc2local_parser(
+                                           comment['updated_at']))[:-6],
+                                       pull=pull_db
+                                       )
 
 
 # @dbtransaction.atomic
@@ -126,26 +133,48 @@ def auto_load_pulls():
                 if pull['closed_at'] is not None:
                     pull['closed_at'] = str(
                         utc2local_parser(pull['closed_at']))[:-6]
-                logger.info('[CRON] auto_load_pulls creating pull in db on date %s start.' % YESTERDAY)
-                pull_db = Pull.objects.get_or_create(pull_number=pull['number'],
-                                                     title=pull['title'],
-                                                     author=pull['user']['login'],
-                                                     body=pull['body'],
-                                                     pull_state=pull['state'],
-                                                     pull_merged=pull['merged'],
-                                                     comments=pull['comments'],
-                                                     review_comments=pull['review_comments'],
-                                                     commits=pull['commits'],
-                                                     additions=pull['additions'],
-                                                     deletions=pull['deletions'],
-                                                     changed_files=pull['changed_files'],
-                                                     created_at=str(utc2local_parser(
-                                                         pull['created_at']))[:-6],
-                                                     updated_at=str(utc2local_parser(
-                                                         pull['updated_at']))[:-6],
-                                                     closed_at=pull['closed_at'],
-                                                     repository=repository_db
-                                                     )[0]
+
+                print Pull.objects.is_exist(pull['number'], repository_db), pull['number'], repository_db
+                if Pull.objects.is_exist(pull['number'], repository_db):
+                    pass
+                    # logger.info('[CRON] auto_load_pulls updating pull in db on date %s start.' % YESTERDAY)
+                    # pull_db = Pull.objects.get(pull_number=pull['number'], repository=repository_db)
+                    # print pull_db.updated_at
+                    # print str(utc2local_parser(pull['updated_at']))[:-6]
+                    # pull_db.body = pull['body']
+                    # pull_db.pull_state = pull['state']
+                    # pull_db.pull_merged = pull['merged']
+                    # pull_db.comments = pull['comments']
+                    # pull_db.review_comments = pull['review_comments']
+                    # pull_db.commits = pull['commits']
+                    # pull_db.additions = pull['additions']
+                    # pull_db.deletions = pull['deletions']
+                    # pull_db.changed_files = pull['changed_files']
+                    # pull_db.updated_at = str(utc2local_parser(
+                    #     pull['updated_at']))[:-6]
+                    # pull_db.closed_at = pull['closed_at']
+                    # pull_db.save()
+                else:
+                    logger.info('[CRON] auto_load_pulls creating new pull in db on date %s start.' % YESTERDAY)
+                    pull_db = Pull.objects.create(pull_number=pull['number'],
+                                                  title=pull['title'],
+                                                  author=pull['user']['login'],
+                                                  body=pull['body'],
+                                                  pull_state=pull['state'],
+                                                  pull_merged=pull['merged'],
+                                                  comments=pull['comments'],
+                                                  review_comments=pull['review_comments'],
+                                                  commits=pull['commits'],
+                                                  additions=pull['additions'],
+                                                  deletions=pull['deletions'],
+                                                  changed_files=pull['changed_files'],
+                                                  created_at=str(utc2local_parser(
+                                                      pull['created_at']))[:-6],
+                                                  updated_at=str(utc2local_parser(
+                                                      pull['updated_at']))[:-6],
+                                                  closed_at=pull['closed_at'],
+                                                  repository=repository_db
+                                                  )
 
                 if pull_db.comments > 0:
                     # create issue's comments in db if it exists, witch is type
@@ -273,17 +302,18 @@ def auto_change_pull_state():
                 commits = repo.get_pull_commits(pull['number'], access_token=ACCESS_TOKEN)
                 new_commits = (set([commit['sha'] for commit in commits]) -
                                set([commit_db.sha for commit_db in commits_db]))
-                for commit in new_commits:
+                for commit in commits:
+                    if commit['sha'] in new_commits:
                         # commits that commitd by members are count.
-                    if commit['commit']['author']['email'] in [member.rh_email for member in members]:
-                        Commit.objects.get_or_create(sha=commit['sha'],
-                                                     author=commit['commit']['author']['name'],
-                                                     email=commit['commit']['author']['email'],
-                                                     date=str(utc2local_parser(
-                                                         commit['commit']['author']['date']))[:-6],
-                                                     message=commit['commit']['message'],
-                                                     repository=pull_db.repository,
-                                                     pull=pull_db)
+                        if commit['commit']['author']['email'] in [member.rh_email for member in members]:
+                            Commit.objects.get_or_create(sha=commit['sha'],
+                                                         author=commit['commit']['author']['name'],
+                                                         email=commit['commit']['author']['email'],
+                                                         date=str(utc2local_parser(
+                                                             commit['commit']['author']['date']))[:-6],
+                                                         message=commit['commit']['message'],
+                                                         repository=pull_db.repository,
+                                                         pull=pull_db)
 
         if pull['state'] == 'closed':
             logger.info('[CRON] auto_change_pull_state close pull in db on date %s start' % YESTERDAY)
