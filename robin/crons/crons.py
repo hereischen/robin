@@ -136,6 +136,7 @@ def auto_load_pulls():
 
                 print Pull.objects.is_exist(pull['number'], repository_db), pull['number'], repository_db
                 if Pull.objects.is_exist(pull['number'], repository_db):
+                    # auto_load_pulls will not update pulls,left to auto_change_pull_state.
                     pass
                     # logger.info('[CRON] auto_load_pulls updating pull in db on date %s start.' % YESTERDAY)
                     # pull_db = Pull.objects.get(pull_number=pull['number'], repository=repository_db)
@@ -176,31 +177,31 @@ def auto_load_pulls():
                                                   repository=repository_db
                                                   )
 
-                if pull_db.comments > 0:
-                    # create issue's comments in db if it exists, witch is type
-                    # 0
-                    comments = repo.get_issue_comments(pull['number'], access_token=ACCESS_TOKEN)
-                    _create_comments(comments, 0, pull_db, members)
+                    if pull_db.comments > 0:
+                        # create issue's comments in db if it exists, witch is type
+                        # 0
+                        comments = repo.get_issue_comments(pull['number'], access_token=ACCESS_TOKEN)
+                        _create_comments(comments, 0, pull_db, members)
 
-                if pull_db.review_comments > 0:
-                    # create pull's comments in db if it exists, witch is type
-                    # 1
-                    comments = repo.get_pull_comments(pull['number'], access_token=ACCESS_TOKEN)
-                    _create_comments(comments, 1, pull_db, members)
-                if pull_db.commits > 0:
-                    logger.info('[CRON] auto_load_pulls creating commit in db on date %s start.' % YESTERDAY)
-                    commits = repo.get_pull_commits(pull['number'], access_token=ACCESS_TOKEN)
-                    for commit in commits:
-                        # commits that commitd by members are count.
-                        if commit['commit']['author']['email'] in [member.rh_email for member in members]:
-                            Commit.objects.get_or_create(sha=commit['sha'],
-                                                         author=commit['commit']['author']['name'],
-                                                         email=commit['commit']['author']['email'],
-                                                         date=str(utc2local_parser(
-                                                             commit['commit']['author']['date']))[:-6],
-                                                         message=commit['commit']['message'],
-                                                         repository=repository_db,
-                                                         pull=pull_db)
+                    if pull_db.review_comments > 0:
+                        # create pull's comments in db if it exists, witch is type
+                        # 1
+                        comments = repo.get_pull_comments(pull['number'], access_token=ACCESS_TOKEN)
+                        _create_comments(comments, 1, pull_db, members)
+                    if pull_db.commits > 0:
+                        logger.info('[CRON] auto_load_pulls creating  %s commit in db on date %s start.' % pull_db.pull_number, YESTERDAY)
+                        commits = repo.get_pull_commits(pull['number'], access_token=ACCESS_TOKEN)
+                        for commit in commits:
+                            # commits that commitd by members are count.
+                            if commit['commit']['author']['email'] in [member.rh_email for member in members]:
+                                Commit.objects.get_or_create(sha=commit['sha'],
+                                                             author=commit['commit']['author']['name'],
+                                                             email=commit['commit']['author']['email'],
+                                                             date=str(utc2local_parser(
+                                                                 commit['commit']['author']['date']))[:-6],
+                                                             message=commit['commit']['message'],
+                                                             repository=repository_db,
+                                                             pull=pull_db)
     logger.info('[CRON] auto_load_pulls on date %s done.' % YESTERDAY)
 
 
@@ -297,23 +298,28 @@ def auto_change_pull_state():
                     if comment['id'] in new_comments:
                         _create_comments(comments, 1, pull_db, members)
             # update commit info of this pull
-            if pull_db.commits > 0:
-                commits_db = Commit.objects.filter(pull=pull_db)
-                commits = repo.get_pull_commits(pull['number'], access_token=ACCESS_TOKEN)
-                new_commits = (set([commit['sha'] for commit in commits]) -
-                               set([commit_db.sha for commit_db in commits_db]))
-                for commit in commits:
-                    if commit['sha'] in new_commits:
-                        # commits that commitd by members are count.
-                        if commit['commit']['author']['email'] in [member.rh_email for member in members]:
-                            Commit.objects.get_or_create(sha=commit['sha'],
-                                                         author=commit['commit']['author']['name'],
-                                                         email=commit['commit']['author']['email'],
-                                                         date=str(utc2local_parser(
-                                                             commit['commit']['author']['date']))[:-6],
-                                                         message=commit['commit']['message'],
-                                                         repository=pull_db.repository,
-                                                         pull=pull_db)
+            # stop updating commits as it does not crrect(2016/10/28).
+            # it is becaues everything stays same ecpect sha in a pull request's new commits
+            # if pull_db.commits > 0:
+            #     commits_db = Commit.objects.filter(pull=pull_db)
+            #     commits = repo.get_pull_commits(pull['number'], access_token=ACCESS_TOKEN)
+            #     new_commits = (set([commit['sha'] for commit in commits]) -
+            #                    set([commit_db.sha for commit_db in commits_db]))
+            #     for commit in commits:
+            #         if commit['sha'] in new_commits:
+
+            #             # commits that commitd by members are count.
+            #             if commit['commit']['author']['email'] in [member.rh_email for member in members]:
+            #                 print pull_db.pull_number, pull_db.author
+            #                 print commits
+            #                 Commit.objects.get_or_create(sha=commit['sha'],
+            #                                              author=commit['commit']['author']['name'],
+            #                                              email=commit['commit']['author']['email'],
+            #                                              date=str(utc2local_parser(
+            #                                                  commit['commit']['author']['date']))[:-6],
+            #                                              message=commit['commit']['message'],
+            #                                              repository=pull_db.repository,
+            #                                              pull=pull_db)
 
         if pull['state'] == 'closed':
             logger.info('[CRON] auto_change_pull_state close pull in db on date %s start' % YESTERDAY)
