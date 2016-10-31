@@ -189,7 +189,7 @@ def auto_load_pulls():
                         comments = repo.get_pull_comments(pull['number'], access_token=ACCESS_TOKEN)
                         _create_comments(comments, 1, pull_db, members)
                     if pull_db.commits > 0:
-                        logger.info('[CRON] auto_load_pulls creating  %s commit in db on date %s start.' % pull_db.pull_number, YESTERDAY)
+                        logger.info('[CRON] auto_load_pulls creating  %s commit in db on date %s start.' % (pull_db.pull_number, YESTERDAY))
                         commits = repo.get_pull_commits(pull['number'], access_token=ACCESS_TOKEN)
                         for commit in commits:
                             # commits that commitd by members are count.
