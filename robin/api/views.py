@@ -263,7 +263,7 @@ def pending_patchs(request):
             logger.info('[pending_patchs] Received data is valid.')
             details = []
             repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
-            pulls = Pull.objects.filter(repository=repo, pull_state=1)
+            pulls = Pull.objects.filter(repository=repo, pull_state=1).order_by('-created_at')
             today = datetime.today()
             for pull in pulls:
                 member = Member.objects.get(github_account=pull.author)
@@ -275,6 +275,8 @@ def pending_patchs(request):
                                 'author': member.kerbroes_id,
                                 'total_pending': total_pending.days,
                                 'last_updated': last_updated.days,
+                                'create_at': pull.created_at,
+                                'updated_at': pull.updated_at,
                                 })
 
             response = _paginate_response(details, request)

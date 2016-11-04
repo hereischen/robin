@@ -24,7 +24,7 @@
                         <th>#</th>
                         <th>Repo Owner</th>
                         <th>Repo Name</th>
-                        <th>Pendings</th>
+                        <th>Pending info</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,8 +52,10 @@
                                     <th>Title</th>
                                     <th>Bug ID</th>
                                     <th>Author</th>
-                                    <th>Last Updated</th>
+                                    <th>Current Pending</th>
+                                    <th>Updated Date</th>
                                     <th>Total Pending</th>
+                                    <th>Created Date</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -63,7 +65,9 @@
                                     <td>${pendingPatch.bug_id}</td>
                                     <td>${pendingPatch.author}</td>
                                     <td>${pendingPatch.last_updated} day(s)</td>
+                                    <td>${pendingPatch.updated_at}</td>
                                     <td>${pendingPatch.total_pending} day(s)</td>
+                                    <td>${pendingPatch.create_at}</td>
                                 </tr>
                             </tbody>
                         </table>
