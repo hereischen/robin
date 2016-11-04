@@ -276,10 +276,12 @@ def pending_patchs(request):
                 member = Member.objects.get(github_account=pull.author)
                 total_pending = today - pull.created_at
                 last_updated = today - pull.updated_at
+                review_comments = Comment.objects.filter(comment_type=1, pull_id=pull.id)
                 details.append({'patch_number': pull.pull_number,
                                 'patch_title': pull.title,
                                 'bug_id': pull.bug_id,
                                 'author': member.kerbroes_id,
+                                'reviews': len(review_comments),
                                 'total_pending': total_pending.days,
                                 'last_updated': last_updated.days,
                                 'create_at': pull.created_at,
