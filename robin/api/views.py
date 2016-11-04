@@ -120,8 +120,8 @@ def opening_patchs(request):
 
             for kerbroes_id in kerbroes_id_list:
                 member = Member.objects.get(kerbroes_id=kerbroes_id)
-                pulls = Pull.objects.filter(repository=repo, pull_state=1,
-                                            author=member.github_account, created_at__range=(start_date, end_date))
+                pulls = Pull.objects.filter(repository=repo, author=member.github_account,
+                                            created_at__range=(start_date, end_date)).order_by('created_at')
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
                                     'patch_title': pull.title,
@@ -133,6 +133,8 @@ def opening_patchs(request):
                                     'deletions': pull.deletions,
                                     'changed_files': pull.changed_files,
                                     'created_at': pull.created_at,
+                                    'updated_at': pull.updated_at,
+                                    'closed_at': pull.closed_at,
                                     })
             response = _paginate_response(details, request)
             return response
