@@ -71,6 +71,16 @@
                                     <td>${pendingPatch.total_pending} day(s)</td>
                                     <td>${pendingPatch.create_at}</td>
                                 </tr>
+                                <tr class="info">
+                                <td>Summary</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>${pendingData.count} patches</td>
                             </tbody>
                         </table>
                     </div>
@@ -186,15 +196,15 @@
                         <form style="text-align: center">
                         <h4>
                           <input type="radio" name="category" value="openingPatchs" v-model="category" checked > 
-                          <span class="label label-primary" >Opening Patchs</span>
+                          <span class="label label-primary" >Opened Patchs</span>
                           <input type="radio" name="category" value="updatedPatchs" v-model="category" > 
                           <span class="label label-primary">Updated Patchs</span>
                           <input type="radio" name="category" value="closedPatchs" v-model="category" > 
                           <span class="label label-primary">Closed Patchs</span>
-                          <input type="radio" name="category" value="commits" v-model="category" > 
-                          <span class="label label-primary">Commits</span>
+                          <!-- <input type="radio" name="category" value="commits" v-model="category" > 
+                          <span class="label label-primary">Commits</span> -->
                           <input type="radio" name="category" value="comments" v-model="category" > 
-                          <span class="label label-primary">Comments</span>
+                          <span class="label label-primary">Reviews</span>
                         </h4>
                         </form>
 
@@ -244,15 +254,15 @@
                         <form style="text-align: center">
                         <h4>
                           <input type="radio" name="category" value="openingPatchs" v-model="category" checked > 
-                          <span class="label label-primary" >Opening Patchs</span>
+                          <span class="label label-primary" >Opened Patchs</span>
                           <input type="radio" name="category" value="updatedPatchs" v-model="category" > 
                           <span class="label label-primary">Updated Patchs</span>
                           <input type="radio" name="category" value="closedPatchs" v-model="category" > 
                           <span class="label label-primary">Closed Patchs</span>
-                          <input type="radio" name="category" value="commits" v-model="category" > 
-                          <span class="label label-primary">Commits</span>
+                          <!-- <input type="radio" name="category" value="commits" v-model="category" > 
+                          <span class="label label-primary">Commits</span> -->
                           <input type="radio" name="category" value="comments" v-model="category" > 
-                          <span class="label label-primary">Comments</span>
+                          <span class="label label-primary">Reviews</span>
                         </h4>
                         </form>
 
@@ -271,9 +281,9 @@
 <!-- ============================= res =============================-->
 <div v-if="hasRes" transition="expand" v-cloak>
     <div v-if="category == 'closedPatchs'">
-        <h3 style="float:left">Cloesd Patchs</h3>
-        <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
-        <hr>
+        <h3 style="float:left">Closed Patches</h3>
+        <!-- <h5 style="float:right; line-height: 60px">${resData.count} in total</h5> -->
+        <hr style="width:100%">
         <table class="table table-striped" >
             <thead>
                 <tr>
@@ -305,14 +315,28 @@
                     <td>${item.created_at}</td>
                     <td>${item.updated_at}</td>
                     <td>${item.closed_at}</td>
+                </tr>
+                <tr class="info">
+                    <td>Summary</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>${resData.count} patches</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <div v-if="category == 'openingPatchs'">
-        <h3 style="float:left">Opening Patchs</h3>
-        <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
+        <h3 style="float:left">Opened Patches</h3>
+        <!-- <h5 style="float:right; line-height: 60px">${resData.count} in total</h5> -->
         <hr style="width:100%">
         <table class="table table-striped" >
             <thead>
@@ -345,14 +369,28 @@
                     <td>${item.created_at}</td>
                     <td>${item.updated_at}</td>
                     <td>${item.closed_at}</td>
+                </tr>
+                <tr class="info">
+                    <td>Summary</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>${resData.count} patches</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <div v-if="category == 'updatedPatchs'">
-        <h3 style="float:left;">Updated Patchs</h3>
-        <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
+        <h3 style="float:left;">Updated Patches</h3>
+        <!-- <h5 style="float:right; line-height: 60px">${resData.count} in total</h5> -->
         <hr style="width:100%">
         <table class="table table-striped" >
             <thead>
@@ -385,6 +423,20 @@
                     <td>${item.created_at}</td>
                     <td>${item.updated_at}</td>
                     <td>${item.closed_at}</td>
+                </tr>
+                <tr class="info">
+                    <td>Summary</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>${resData.count} patches</td>
                 </tr>
             </tbody>
         </table>
@@ -417,8 +469,8 @@
     </div>
 
     <div v-if="category == 'comments'">
-        <h3 style="float:left">Comments</h3>
-        <h5 style="float:right; line-height: 60px">${resData.count} in total</h5>
+        <h3 style="float:left">Reviews</h3>
+        <!-- <h5 style="float:right; line-height: 60px">${resData.count} in total</h5> -->
         <hr style="width:100%">
         <table class="table table-striped" >
             <thead>
@@ -440,6 +492,15 @@
                     <td>${item.created_at}</td>
                     <td>${item.updated_at}</td>
                 </tr>
+                <tr class="info">
+                    <td>Summary</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>${resData.count} patches</td>
+                </tr>
+
             </tbody>
         </table>
     </div>
