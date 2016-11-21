@@ -13,6 +13,6 @@ def home(request):
     if request.method == 'GET':
         logger.info('[home] index is visted.')
         resp = render(request, 'index.html', {})
-        resp.setdefault('IGE-Version', VERSION)
-        resp.setdefault('IGE-Release-Date', RELEASE_DATE)
+        resp.setdefault('Version', VERSION)
+        resp.setdefault('Release-Date', RELEASE_DATE)
         return resp
