@@ -13,7 +13,7 @@ Description
 0.0.4
 -----
  - Improvment: Updated patches Returns pulls that their last ‘updated_at’
-               are in the range of selected period, whereas ‘created_at’ are not.
+               are in the range of selected period, and ‘created_at’ are not equal to 'updated_at'.
                It includes all states: open,updated, closed (merged only ) and its
                dates respectively.
 
@@ -21,6 +21,7 @@ Description
               excluding the pull author’s comments.
               Review includes both comments and review comments from github.
  - New: add version and release date header for version control for deployment.
+
 0.0.3
 -----
  - Improvement: changed opening patches to submitted patches
