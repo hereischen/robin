@@ -204,7 +204,9 @@ def updated_patchs(request):
 
             for kerbroes_id in kerbroes_id_list:
                 member = Member.objects.get(kerbroes_id=kerbroes_id)
-                pulls = Pull.objects.filter(repository=repo, author=member.github_account,
+                pulls = Pull.objects.filter(repository=repo,
+                                            author=member.github_account,
+                                            pull_merged=True,
                                             updated_at__range=(start_date, end_date)).exclude(created_at__range=(start_date, end_date))
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
