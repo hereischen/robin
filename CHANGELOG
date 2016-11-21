@@ -9,6 +9,26 @@ Description
  - Deprecated: 弃用已有功能
  - Removed: 删除已有功能
 
+
+0.0.4
+-----
+ - Improvment: Updated patches Returns pulls that their last ‘updated_at’
+               are in the range of selected period, whereas ‘created_at’ are not.
+               It includes all states: open,updated, closed (merged only ) and its
+               dates respectively.
+
+ - Improvment:Returns comments that their ‘created_at’ fall into the selected period,
+              excluding the pull author’s comments.
+              Review includes both comments and review comments from github.
+ - New: add version and release date header for version control for deployment.
+0.0.3
+-----
+ - Improvement: changed opening patches to submitted patches
+ - Improvement: changed closed patches to merged patches
+ - New: add summery for query results
+ - New: add more info in pending patches results
+ - Deprecated: commits, query for commits is commented out in html
+
 0.0.2
 -----
  - New: new logging in views
