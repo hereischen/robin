@@ -2,6 +2,7 @@ import logging
 
 
 from datetime import datetime
+from django.db.models import F
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
@@ -163,7 +164,7 @@ def closed_patchs(request):
                 member = Member.objects.get(kerbroes_id=kerbroes_id)
                 pulls = Pull.objects.filter(repository=repo, pull_state=0, pull_merged=True,
                                             author=member.github_account,
-                                            closed_at__range=(start_date, end_date)).exclude(created_at__range=(start_date, end_date))
+                                            closed_at__range=(start_date, end_date)).exclude(created_at=F('updated_at'))
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
                                     'patch_title': pull.title,
@@ -309,8 +310,9 @@ def comment_stats(request):
             kerbroes_id_list = serializer.validated_data.get('kerbroes_id', '').strip().split(',')
             for kerbroes_id in kerbroes_id_list:
                 member = Member.objects.get(kerbroes_id=kerbroes_id)
-                comments = Comment.objects.filter(author=member.github_account, comment_type=1,
-                                                  created_at__range=(start_date, end_date), pull__repository=repo)
+                comments = Comment.objects.filter(author=member.github_account,
+                                                  created_at__range=(start_date, end_date),
+                                                  pull__repository=repo)
                 for comment in comments:
                     if comment.author != comment.pull.author:
                         details.append({'comment_id': comment.comment_id,
