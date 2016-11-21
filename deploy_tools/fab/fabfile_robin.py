@@ -43,7 +43,7 @@ from contextlib import contextmanager
 DEBUG = False
 
 PROJECT_ASCII_NAME = '''\
- _______  _______  ______  _________ _       
+ _______  _______  ______  _________ _
 (  ____ )(  ___  )(  ___ \ \__   __/( (    /|
 | (    )|| (   ) || (   ) )   ) (   |  \  ( |
 | (____)|| |   | || (__/ /    | |   |   \ | |
@@ -297,8 +297,9 @@ def _check_app_version():
     response = urllib.urlopen(env.app_url)
     headers = response.info()
     print ' HTTP STATUS: [%s]' % cyan(response.code, bold=True)
-    # print ' APP VERSION: [%s]' % cyan(headers['Version'], bold=True)
-    # print ' APP RELEASE: [%s]' % cyan(headers['Release-Date'], bold=True)
+    print headers.keys()
+    print ' APP VERSION: [%s]' % cyan(headers['ige-version'], bold=True)
+    print ' APP RELEASE: [%s]' % cyan(headers['ige-release-date'], bold=True)
 
 
 # def _check_celery_worker():
