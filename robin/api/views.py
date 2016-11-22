@@ -215,8 +215,9 @@ def updated_patchs(request):
                                             author=member.github_account,
                                             pull_merged=True,
                                             updated_at__range=(start_date, end_date)
-                                            ).exclude(created_at=F('updated_at'),
-                                                      updated_at__gt=F('closed_at'))
+                                            ).exclude(created_at=F('updated_at')
+                                                     ).exclude(updated_at__gt=F('closed_at'))
+                                            
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
                                     'patch_title': pull.title,
