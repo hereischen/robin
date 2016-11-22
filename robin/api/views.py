@@ -41,6 +41,11 @@ def _stats_type_sortor(stats_type, team_code, kerbroes_id):
     return kerbroes_id_list
 
 
+def _build_github_pull_url(owner, repo, pull_number):
+    url = 'https://github.com/%s/%s/pull/%s' % (owner, repo, pull_number)
+    return url
+
+
 class CustomPagination(PageNumberPagination):
     def get_paginated_response(self, data):
         return Response({
@@ -136,6 +141,7 @@ def opening_patchs(request):
                                     'created_at': pull.created_at,
                                     'updated_at': pull.updated_at,
                                     'closed_at': pull.closed_at,
+                                    'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
                                     })
             response = _paginate_response(details, request)
             return response
@@ -178,6 +184,7 @@ def closed_patchs(request):
                                     'created_at': pull.created_at,
                                     'updated_at': pull.updated_at,
                                     'closed_at': pull.closed_at,
+                                    'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
                                     })
             response = _paginate_response(details, request)
             return response
@@ -223,6 +230,7 @@ def updated_patchs(request):
                                     'created_at': pull.created_at,
                                     'updated_at': pull.updated_at,
                                     'closed_at': pull.closed_at,
+                                    'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
                                     })
             response = _paginate_response(details, request)
             return response
@@ -291,6 +299,7 @@ def pending_patchs(request):
                                 'last_updated': last_updated.days,
                                 'create_at': pull.created_at,
                                 'updated_at': pull.updated_at,
+                                'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
                                 })
 
             response = _paginate_response(details, request)
@@ -325,6 +334,7 @@ def comment_stats(request):
                                         'body': comment.body,
                                         'created_at': comment.created_at,
                                         'updated_at': comment.updated_at,
+                                        'patch_url': _build_github_pull_url(repo.owner, repo.repo, comment.pull.pull_number),
                                         })
 
             response = _paginate_response(details, request)

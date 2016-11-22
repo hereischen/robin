@@ -61,7 +61,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="pendingPatch in pendingData.pendingPatchs">
-                                    <td>${pendingPatch.patch_number}</td>
+                                    <td><a href="${pendingPatch.patch_url}">${pendingPatch.patch_number}</a></td>
                                     <td>${pendingPatch.patch_title}</td>
                                     <td>${pendingPatch.bug_id}</td>
                                     <td>${pendingPatch.author}</td>
@@ -303,7 +303,7 @@
             </thead>
             <tbody>
                 <tr v-for="item in resData.results">
-                    <td>${item.patch_number}</td>
+                    <td><a href="${item.patch_url}">${item.patch_number}</a></td>
                     <td>${item.patch_title}</td>
                     <td>${item.bug_id}</td>
                     <td>${item.pull_merged}</td>
@@ -357,7 +357,7 @@
             </thead>
             <tbody>
                 <tr v-for="item in resData.results">
-                    <td>${item.patch_number}</td>
+                    <td><a href="${item.patch_url}">${item.patch_number}</a></td> 
                     <td>${item.patch_title}</td>
                     <td>${item.bug_id}</td>
                     <td>${item.pull_merged}</td>
@@ -411,7 +411,7 @@
             </thead>
             <tbody>
                 <tr v-for="item in resData.results">
-                    <td>${item.patch_number}</td>
+                    <td><a href="${item.patch_url}">${item.patch_number}</a></td>
                     <td>${item.patch_title}</td>
                     <td>${item.bug_id}</td>
                     <td>${item.pull_merged}</td>
@@ -485,7 +485,7 @@
             </thead>
             <tbody>
                 <tr v-for="item in resData.results">
-                    <td>${item.patch_number}</td>
+                    <td><a href="${item.patch_url}">${item.patch_number}</a></td>
                     <td>${item.comment_id}</td>
                     <td>${item.author}</td>
                     <td>${item.body}</td>
