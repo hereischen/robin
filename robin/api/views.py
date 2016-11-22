@@ -164,7 +164,7 @@ def closed_patchs(request):
                 member = Member.objects.get(kerbroes_id=kerbroes_id)
                 pulls = Pull.objects.filter(repository=repo, pull_state=0, pull_merged=True,
                                             author=member.github_account,
-                                            closed_at__range=(start_date, end_date)).exclude(created_at=F('updated_at'))
+                                            closed_at__range=(start_date, end_date))
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
                                     'patch_title': pull.title,
@@ -207,7 +207,9 @@ def updated_patchs(request):
                 pulls = Pull.objects.filter(repository=repo,
                                             author=member.github_account,
                                             pull_merged=True,
-                                            updated_at__range=(start_date, end_date)).exclude(created_at__range=(start_date, end_date))
+                                            updated_at__range=(start_date, end_date)
+                                            ).exclude(created_at=F('updated_at'),
+                                                      updated_at__gt=F('closed_at'))
                 for pull in pulls:
                     details.append({'patch_number': pull.pull_number,
                                     'patch_title': pull.title,
