@@ -49,6 +49,7 @@
                             <thead>
                                 <tr>
                                     <th>Patch No.</th>
+                                    <th>Repo</th>
                                     <th>Title</th>
                                     <th>Bug ID</th>
                                     <th>Author</th>
@@ -62,6 +63,7 @@
                             <tbody>
                                 <tr v-for="pendingPatch in pendingData.pendingPatchs">
                                     <td><a href="${pendingPatch.patch_url}">${pendingPatch.patch_number}</a></td>
+                                    <td>${pendingPatch.repo}</td> 
                                     <td>${pendingPatch.patch_title}</td>
                                     <td>${pendingPatch.bug_id}</td>
                                     <td>${pendingPatch.author}</td>
@@ -73,6 +75,7 @@
                                 </tr>
                                 <tr class="info">
                                 <td>Summary</td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -281,13 +284,14 @@
 <!-- ============================= res =============================-->
 <div v-if="hasRes" transition="expand" v-cloak>
     <div v-if="category == 'closedPatchs'">
-        <h3 style="float:left">Closed Patches</h3>
+        <h3 style="float:left">Merged Patches</h3>
         <!-- <h5 style="float:right; line-height: 60px">${resData.count} in total</h5> -->
         <hr style="width:100%">
         <table class="table table-striped" >
             <thead>
                 <tr>
                     <th>Patch No.</th>
+                    <th>Repo</th>
                     <th>Patch Title</th>
                     <th>Bug ID</th>
                     <th>Is Merged</th>
@@ -304,6 +308,7 @@
             <tbody>
                 <tr v-for="item in resData.results">
                     <td><a href="${item.patch_url}">${item.patch_number}</a></td>
+                    <td>${item.repo}</td> 
                     <td>${item.patch_title}</td>
                     <td>${item.bug_id}</td>
                     <td>${item.pull_merged}</td>
@@ -318,6 +323,7 @@
                 </tr>
                 <tr class="info">
                     <td>Summary</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -335,13 +341,14 @@
     </div>
 
     <div v-if="category == 'openingPatchs'">
-        <h3 style="float:left">Opened Patches</h3>
+        <h3 style="float:left">Submitted Patches</h3>
         <!-- <h5 style="float:right; line-height: 60px">${resData.count} in total</h5> -->
         <hr style="width:100%">
         <table class="table table-striped" >
             <thead>
                 <tr>
                     <th>Patch No.</th>
+                    <th>Repo</th>
                     <th>Patch Title</th>
                     <th>Bug ID</th>
                     <th>Is Merged</th>
@@ -357,7 +364,8 @@
             </thead>
             <tbody>
                 <tr v-for="item in resData.results">
-                    <td><a href="${item.patch_url}">${item.patch_number}</a></td> 
+                    <td><a href="${item.patch_url}">${item.patch_number}</a></td>
+                    <td>${item.repo}</td> 
                     <td>${item.patch_title}</td>
                     <td>${item.bug_id}</td>
                     <td>${item.pull_merged}</td>
@@ -372,6 +380,7 @@
                 </tr>
                 <tr class="info">
                     <td>Summary</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -396,6 +405,7 @@
             <thead>
                 <tr>
                     <th>Patch No.</th>
+                    <th>Repo</th>
                     <th>Patch Title</th>
                     <th>Bug ID</th>
                     <th>Is Merged</th>
@@ -412,6 +422,7 @@
             <tbody>
                 <tr v-for="item in resData.results">
                     <td><a href="${item.patch_url}">${item.patch_number}</a></td>
+                    <td>${item.repo}</td> 
                     <td>${item.patch_title}</td>
                     <td>${item.bug_id}</td>
                     <td>${item.pull_merged}</td>
@@ -426,6 +437,7 @@
                 </tr>
                 <tr class="info">
                     <td>Summary</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -476,6 +488,7 @@
             <thead>
                 <tr>
                     <th>Patch No.</th>
+                    <th>Repo</th>
                     <th>Comment ID</th>
                     <th>Author</th>
                     <th>Content</th>
@@ -486,6 +499,7 @@
             <tbody>
                 <tr v-for="item in resData.results">
                     <td><a href="${item.patch_url}">${item.patch_number}</a></td>
+                    <td>${item.repo}</td> 
                     <td>${item.comment_id}</td>
                     <td>${item.author}</td>
                     <td>${item.body}</td>
@@ -494,6 +508,7 @@
                 </tr>
                 <tr class="info">
                     <td>Summary</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>

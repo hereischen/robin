@@ -107,10 +107,10 @@ var reopData = new Vue({
             val.forEach(function(el, index) {
                 if (el.checked == undefined) {
                     var status = _.findIndex(self.repoTmp, function(o) {
-                        return o.repository_id == el.repository_id;
+                        return o.id == el.id;
                     })
                     val.$set(index, {
-                        repository_id: el.repository_id,
+                        repository_id: el.id,
                         checked: status == -1 ? false: true
                     })
                 }
@@ -157,10 +157,16 @@ var reopData = new Vue({
                 tips.call(self, 'Start date can not be later than the End date.', 'danger')
                 return;
             }
-            console.log(this.category);
+            // console.log(this.category);
+            // console.log(this.repoTmp);
+            var repo_ids = [];
+                self.repoTmp.forEach(function(el) {
+                    repo_ids.push(el.id)
+                });
+            // console.log(repo_ids);
             if (this.category == 'openingPatchs'){
                 get('/api/stats/opening-patchs', {
-                    repository_id: self.repoTmp[0].id,
+                    repository_id: repo_ids.join(','),
                     stats_type: self.type,
                     kerbroes_id: self.teamTmp[0].members.join(','),
                     start_date: self.beginTime,
@@ -174,7 +180,7 @@ var reopData = new Vue({
             }
             if (this.category == 'updatedPatchs'){
                 get('/api/stats/updated-patchs', {
-                    repository_id: self.repoTmp[0].id,
+                    repository_id: repo_ids.join(','),
                     stats_type: self.type,
                     kerbroes_id: self.teamTmp[0].members.join(','),
                     start_date: self.beginTime,
@@ -188,14 +194,14 @@ var reopData = new Vue({
             }
             if (this.category == 'closedPatchs'){
                 get('/api/stats/closed-patchs', {
-                    repository_id: self.repoTmp[0].id,
+                    repository_id: repo_ids.join(','),
                     stats_type: self.type,
                     kerbroes_id: self.teamTmp[0].members.join(','),
                     start_date: self.beginTime,
                     end_date: self.endTime
                 }).then(function(res) {
-                    console.log(res)
-                    console.log(self.category)
+                    // console.log(res)
+                    // console.log(self.category)
                     self.resData = res,
                     self.hasRes = true,
                     $('#teamModal').modal('hide');
@@ -220,7 +226,7 @@ var reopData = new Vue({
             }
             if (this.category == 'comments'){
                 get('/api/stats/comments', {
-                    repository_id: self.repoTmp[0].id,
+                    repository_id: repo_ids.join(','),
                     // stats_type: self.type,
                     kerbroes_id: self.teamTmp[0].members.join(','),
                     start_date: self.beginTime,
@@ -248,13 +254,19 @@ var reopData = new Vue({
             }
             // console.log(self.memberTmp);
             // console.log(this.category);
+            var repo_ids = [];
+                self.repoTmp.forEach(function(el) {
+                    repo_ids.push(el.id)
+                });
+
             var kerbroes_ids = [];
                 self.memberTmp.forEach(function(el) {
                     kerbroes_ids.push(el.kerbroes_id)
-                })
+                });
+            // console.log(kerbroes_ids);
             if (this.category == 'openingPatchs'){
                 get('/api/stats/opening-patchs', {
-                    repository_id: self.repoTmp[0].id,
+                    repository_id: repo_ids.join(','),
                     stats_type: self.type,
                     kerbroes_id: kerbroes_ids.join(','),
                     start_date: self.beginTime,
@@ -268,7 +280,7 @@ var reopData = new Vue({
             }
             if (this.category == 'updatedPatchs'){
                 get('/api/stats/updated-patchs', {
-                    repository_id: self.repoTmp[0].id,
+                    repository_id: repo_ids.join(','),
                     stats_type: self.type,
                     kerbroes_id: kerbroes_ids.join(','),
                     start_date: self.beginTime,
@@ -282,7 +294,7 @@ var reopData = new Vue({
             }
             if (this.category == 'closedPatchs'){
                 get('/api/stats/closed-patchs', {
-                    repository_id: self.repoTmp[0].id,
+                    repository_id: repo_ids.join(','),
                     stats_type: self.type,
                     kerbroes_id: kerbroes_ids.join(','),
                     start_date: self.beginTime,
@@ -314,7 +326,7 @@ var reopData = new Vue({
             }
             if (this.category == 'comments'){
                 get('/api/stats/comments', {
-                    repository_id: self.repoTmp[0].id,
+                    repository_id: repo_ids.join(','),
                     // stats_type: self.type,
                     kerbroes_id: kerbroes_ids.join(','),
                     start_date: self.beginTime,
@@ -340,7 +352,7 @@ var reopData = new Vue({
                 _.sortedUniq(this.repoTmp);
             } else {
                 _.remove(this.repoTmp, function(el) {
-                    return el.repository_id == repo.repository_id;
+                    return el.id == repo.id;
                 })
             }
         },
