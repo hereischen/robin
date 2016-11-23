@@ -39,7 +39,7 @@ class MemberSerializer(serializers.Serializer):
 
 class BasesStatsSerializer(serializers.Serializer):
     stats_type = serializers.ChoiceField(choices=STATS_TYPE, required=True)
-    repository_id = serializers.IntegerField(required=True)
+    repository_id = serializers.CharField(required=True)
     team_code = serializers.CharField(required=False)
     kerbroes_id = serializers.CharField(required=False)
     start_date = serializers.DateField(required=True)
@@ -51,7 +51,7 @@ class BasesStatsSerializer(serializers.Serializer):
 
 
 class CommentStatsSerializer(serializers.Serializer):
-    repository_id = serializers.IntegerField(required=True)
+    repository_id = serializers.CharField(required=True)
     kerbroes_id = serializers.CharField(required=True)
     start_date = serializers.DateField(required=True)
     end_date = serializers.DateField(required=True)

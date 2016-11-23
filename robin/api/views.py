@@ -119,30 +119,34 @@ def opening_patchs(request):
             end_date = serializer.validated_data['end_date']
 
             details = []
-            repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
-            kerbroes_id_list = _stats_type_sortor(serializer.validated_data['stats_type'],
-                                                  serializer.validated_data.get('team_code', ''),
-                                                  serializer.validated_data.get('kerbroes_id', ''))
+            # repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
+            repo_id_list = serializer.validated_data['repository_id'].strip().split(',')
+            for repo_id in repo_id_list:
+                repo = Repository.objects.get(id=repo_id)
+                kerbroes_id_list = _stats_type_sortor(serializer.validated_data['stats_type'],
+                                                      serializer.validated_data.get('team_code', ''),
+                                                      serializer.validated_data.get('kerbroes_id', ''))
 
-            for kerbroes_id in kerbroes_id_list:
-                member = Member.objects.get(kerbroes_id=kerbroes_id)
-                pulls = Pull.objects.filter(repository=repo, author=member.github_account,
-                                            created_at__range=(start_date, end_date)).order_by('created_at')
-                for pull in pulls:
-                    details.append({'patch_number': pull.pull_number,
-                                    'patch_title': pull.title,
-                                    'bug_id': pull.bug_id,
-                                    'author': member.kerbroes_id,
-                                    'pull_merged': pull.pull_merged,
-                                    'commits': pull.commits,
-                                    'additions': pull.additions,
-                                    'deletions': pull.deletions,
-                                    'changed_files': pull.changed_files,
-                                    'created_at': pull.created_at,
-                                    'updated_at': pull.updated_at,
-                                    'closed_at': pull.closed_at,
-                                    'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
-                                    })
+                for kerbroes_id in kerbroes_id_list:
+                    member = Member.objects.get(kerbroes_id=kerbroes_id)
+                    pulls = Pull.objects.filter(repository=repo, author=member.github_account,
+                                                created_at__range=(start_date, end_date)).order_by('created_at')
+                    for pull in pulls:
+                        details.append({'patch_number': pull.pull_number,
+                                        'repo': repo.repo,
+                                        'patch_title': pull.title,
+                                        'bug_id': pull.bug_id,
+                                        'author': member.kerbroes_id,
+                                        'pull_merged': pull.pull_merged,
+                                        'commits': pull.commits,
+                                        'additions': pull.additions,
+                                        'deletions': pull.deletions,
+                                        'changed_files': pull.changed_files,
+                                        'created_at': pull.created_at,
+                                        'updated_at': pull.updated_at,
+                                        'closed_at': pull.closed_at,
+                                        'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
+                                        })
             response = _paginate_response(details, request)
             return response
 
@@ -161,31 +165,35 @@ def closed_patchs(request):
             end_date = serializer.validated_data['end_date']
 
             details = []
-            repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
-            kerbroes_id_list = _stats_type_sortor(serializer.validated_data['stats_type'],
-                                                  serializer.validated_data.get('team_code', ''),
-                                                  serializer.validated_data.get('kerbroes_id', ''))
+            # repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
+            repo_id_list = serializer.validated_data['repository_id'].strip().split(',')
+            for repo_id in repo_id_list:
+                repo = Repository.objects.get(id=repo_id)
+                kerbroes_id_list = _stats_type_sortor(serializer.validated_data['stats_type'],
+                                                      serializer.validated_data.get('team_code', ''),
+                                                      serializer.validated_data.get('kerbroes_id', ''))
 
-            for kerbroes_id in kerbroes_id_list:
-                member = Member.objects.get(kerbroes_id=kerbroes_id)
-                pulls = Pull.objects.filter(repository=repo, pull_state=0, pull_merged=True,
-                                            author=member.github_account,
-                                            closed_at__range=(start_date, end_date))
-                for pull in pulls:
-                    details.append({'patch_number': pull.pull_number,
-                                    'patch_title': pull.title,
-                                    'bug_id': pull.bug_id,
-                                    'author': member.kerbroes_id,
-                                    'pull_merged': pull.pull_merged,
-                                    'commits': pull.commits,
-                                    'additions': pull.additions,
-                                    'deletions': pull.deletions,
-                                    'changed_files': pull.changed_files,
-                                    'created_at': pull.created_at,
-                                    'updated_at': pull.updated_at,
-                                    'closed_at': pull.closed_at,
-                                    'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
-                                    })
+                for kerbroes_id in kerbroes_id_list:
+                    member = Member.objects.get(kerbroes_id=kerbroes_id)
+                    pulls = Pull.objects.filter(repository=repo, pull_state=0, pull_merged=True,
+                                                author=member.github_account,
+                                                closed_at__range=(start_date, end_date))
+                    for pull in pulls:
+                        details.append({'patch_number': pull.pull_number,
+                                        'repo': repo.repo,
+                                        'patch_title': pull.title,
+                                        'bug_id': pull.bug_id,
+                                        'author': member.kerbroes_id,
+                                        'pull_merged': pull.pull_merged,
+                                        'commits': pull.commits,
+                                        'additions': pull.additions,
+                                        'deletions': pull.deletions,
+                                        'changed_files': pull.changed_files,
+                                        'created_at': pull.created_at,
+                                        'updated_at': pull.updated_at,
+                                        'closed_at': pull.closed_at,
+                                        'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
+                                        })
             response = _paginate_response(details, request)
             return response
 
@@ -204,35 +212,39 @@ def updated_patchs(request):
             end_date = serializer.validated_data['end_date']
 
             details = []
-            repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
-            kerbroes_id_list = _stats_type_sortor(serializer.validated_data['stats_type'],
-                                                  serializer.validated_data.get('team_code', ''),
-                                                  serializer.validated_data.get('kerbroes_id', ''))
+            # repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
+            repo_id_list = serializer.validated_data['repository_id'].strip().split(',')
+            for repo_id in repo_id_list:
+                repo = Repository.objects.get(id=repo_id)
+                kerbroes_id_list = _stats_type_sortor(serializer.validated_data['stats_type'],
+                                                      serializer.validated_data.get('team_code', ''),
+                                                      serializer.validated_data.get('kerbroes_id', ''))
 
-            for kerbroes_id in kerbroes_id_list:
-                member = Member.objects.get(kerbroes_id=kerbroes_id)
-                pulls = Pull.objects.filter(repository=repo,
-                                            author=member.github_account,
-                                            pull_merged=True,
-                                            updated_at__range=(start_date, end_date)
-                                            ).exclude(created_at=F('updated_at')
-                                                     ).exclude(updated_at__gt=F('closed_at'))
-                                            
-                for pull in pulls:
-                    details.append({'patch_number': pull.pull_number,
-                                    'patch_title': pull.title,
-                                    'bug_id': pull.bug_id,
-                                    'author': member.kerbroes_id,
-                                    'pull_merged': pull.pull_merged,
-                                    'commits': pull.commits,
-                                    'additions': pull.additions,
-                                    'deletions': pull.deletions,
-                                    'changed_files': pull.changed_files,
-                                    'created_at': pull.created_at,
-                                    'updated_at': pull.updated_at,
-                                    'closed_at': pull.closed_at,
-                                    'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
-                                    })
+                for kerbroes_id in kerbroes_id_list:
+                    member = Member.objects.get(kerbroes_id=kerbroes_id)
+                    pulls = Pull.objects.filter(repository=repo,
+                                                author=member.github_account,
+                                                pull_merged=True,
+                                                updated_at__range=(start_date, end_date)
+                                                ).exclude(created_at=F('updated_at')
+                                                         ).exclude(updated_at__gt=F('closed_at'))
+
+                    for pull in pulls:
+                        details.append({'patch_number': pull.pull_number,
+                                        'repo': repo.repo,
+                                        'patch_title': pull.title,
+                                        'bug_id': pull.bug_id,
+                                        'author': member.kerbroes_id,
+                                        'pull_merged': pull.pull_merged,
+                                        'commits': pull.commits,
+                                        'additions': pull.additions,
+                                        'deletions': pull.deletions,
+                                        'changed_files': pull.changed_files,
+                                        'created_at': pull.created_at,
+                                        'updated_at': pull.updated_at,
+                                        'closed_at': pull.closed_at,
+                                        'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
+                                        })
             response = _paginate_response(details, request)
             return response
 
@@ -292,6 +304,7 @@ def pending_patchs(request):
                 last_updated = today - pull.updated_at
                 review_comments = Comment.objects.filter(comment_type=1, pull_id=pull.id)
                 details.append({'patch_number': pull.pull_number,
+                                'repo': repo.repo,
                                 'patch_title': pull.title,
                                 'bug_id': pull.bug_id,
                                 'author': member.kerbroes_id,
@@ -320,23 +333,27 @@ def comment_stats(request):
             end_date = serializer.validated_data['end_date']
 
             details = []
-            repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
-            kerbroes_id_list = serializer.validated_data.get('kerbroes_id', '').strip().split(',')
-            for kerbroes_id in kerbroes_id_list:
-                member = Member.objects.get(kerbroes_id=kerbroes_id)
-                comments = Comment.objects.filter(author=member.github_account,
-                                                  created_at__range=(start_date, end_date),
-                                                  pull__repository=repo)
-                for comment in comments:
-                    if comment.author != comment.pull.author:
-                        details.append({'comment_id': comment.comment_id,
-                                        'patch_number': comment.pull.pull_number,
-                                        'author': member.kerbroes_id,
-                                        'body': comment.body,
-                                        'created_at': comment.created_at,
-                                        'updated_at': comment.updated_at,
-                                        'patch_url': _build_github_pull_url(repo.owner, repo.repo, comment.pull.pull_number),
-                                        })
+            # repo = Repository.objects.get(id=serializer.validated_data['repository_id'])
+            repo_id_list = serializer.validated_data['repository_id'].strip().split(',')
+            for repo_id in repo_id_list:
+                repo = Repository.objects.get(id=repo_id)
+                kerbroes_id_list = serializer.validated_data.get('kerbroes_id', '').strip().split(',')
+                for kerbroes_id in kerbroes_id_list:
+                    member = Member.objects.get(kerbroes_id=kerbroes_id)
+                    comments = Comment.objects.filter(author=member.github_account,
+                                                      created_at__range=(start_date, end_date),
+                                                      pull__repository=repo)
+                    for comment in comments:
+                        if comment.author != comment.pull.author:
+                            details.append({'comment_id': comment.comment_id,
+                                            'patch_number': comment.pull.pull_number,
+                                            'repo': repo.repo,
+                                            'author': member.kerbroes_id,
+                                            'body': comment.body,
+                                            'created_at': comment.created_at,
+                                            'updated_at': comment.updated_at,
+                                            'patch_url': _build_github_pull_url(repo.owner, repo.repo, comment.pull.pull_number),
+                                            })
 
             response = _paginate_response(details, request)
             return response
