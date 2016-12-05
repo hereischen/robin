@@ -216,7 +216,7 @@ CRONJOBS = [
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'DEFAULT_PAGINATION_CLASS': 'robin.api.core.pagination.CustomPagination',
-    'PAGE_SIZE': 100,
+    'PAGE_SIZE': 2000,
 }
 
 # Github access_token. API rate limit,
