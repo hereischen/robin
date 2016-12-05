@@ -222,12 +222,19 @@ def updated_patchs(request):
 
                 for kerbroes_id in kerbroes_id_list:
                     member = Member.objects.get(kerbroes_id=kerbroes_id)
+                    # filter pulls are open
+                    # then filter pulls are merged and exclude updated_at greater then closed at
                     pulls = Pull.objects.filter(repository=repo,
                                                 author=member.github_account,
-                                                pull_merged=True,
+                                                pull_merged=False,
                                                 updated_at__range=(start_date, end_date)
-                                                ).exclude(created_at=F('updated_at')
-                                                         ).exclude(updated_at__gt=F('closed_at'))
+                                                ).exclude(created_at=F('updated_at')) | Pull.objects.filter(
+                                                    repository=repo,
+                                                    author=member.github_account,
+                                                    pull_merged=True,
+                                                    updated_at__range=(start_date, end_date)
+                                                    ).exclude(created_at=F('updated_at')
+                                                             ).exclude(updated_at__gt=F('closed_at'))
 
                     for pull in pulls:
                         details.append({'patch_number': pull.pull_number,
