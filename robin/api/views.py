@@ -354,8 +354,11 @@ def comment_stats(request):
                                             'updated_at': comment.updated_at,
                                             'patch_url': _build_github_pull_url(repo.owner, repo.repo, comment.pull.pull_number),
                                             })
+            # group comments of same pull together
+            values = set(map(lambda x:x['patch_url'], details))
+            new_details = [[y for y in details if y['patch_url'] == x] for x in values]
 
-            response = _paginate_response(details, request)
+            response = _paginate_response(new_details, request)
             return response
         raise APIError(APIError.INVALID_REQUEST_DATA, detail=serializer.errors)
     raise APIError(APIError.INVALID_REQUEST_METHOD, detail='Does Not Support Post Method')
@@ -369,7 +372,7 @@ def weather_chart_view(request):
         DataPool(
            series=
             [{'options': {
-               'source': Pull.objects.all()[:10]},
+               'source': Pull.objects.all()},
               'terms': [
                 'author',
                 'additions',

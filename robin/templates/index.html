@@ -497,14 +497,54 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in resData.results">
-                    <td><a href="${item.patch_url}">${item.patch_number}</a></td>
+                <tr v-for="itemList in resData.results">
+<!--                     <td><a href="${item.patch_url}">${item.patch_number}</a></td>
                     <td>${item.repo}</td> 
                     <td>${item.comment_id}</td>
                     <td>${item.author}</td>
                     <td>${item.body}</td>
                     <td>${item.created_at}</td>
-                    <td>${item.updated_at}</td>
+                    <td>${item.updated_at}</td> -->
+                    <td ><a href="${itemList[0].patch_url}">${itemList[0].patch_number}</a></td>
+                    <td >${itemList[0].repo}</td>
+                    <td v-if="${itemList.length} === 1"> 11111</td>
+                    <td v-else>${itemList.length}</td>
+                    <td>
+                        <table class="table table-striped" >
+                        <tr v-for="item in itemList">
+                            <td>${item.comment_id}</td>
+                        </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table class="table table-striped" >
+                        <tr v-for="item in itemList">
+                            <td>${item.author}</td>
+                        </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table class="table table-striped" >
+                        <tr v-for="item in itemList">
+                            <td>${item.body}</td>
+                        </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table class="table table-striped" >
+                        <tr v-for="item in itemList">
+                            <td>${item.created_at}</td>
+                        </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table class="table table-striped" >
+                        <tr v-for="item in itemList">
+                            <td>${item.updated_at}</td>
+                        </tr>
+                        </table>
+                    </td>
+
                 </tr>
                 <tr class="info">
                     <td>Summary</td>
@@ -512,7 +552,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
+                    <td>${resData.count} patches</td>
                     <td>${resData.count} reviews</td>
                 </tr>
 
