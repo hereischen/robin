@@ -356,7 +356,10 @@ def comment_stats(request):
                                             })
             # group comments of same pull together
             values = set(map(lambda x:x['patch_url'], details))
-            new_details = [[y for y in details if y['patch_url'] == x] for x in values]
+            details_group = [[y for y in details if y['patch_url'] == x] for x in values]
+            new_details = [{ 'patch_count':len(details_group),
+                             'review_count':len(details),
+                             'data':details_group}] 
 
             response = _paginate_response(new_details, request)
             return response
