@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}Robin{% endblock %}
+
+
+{% block head_block %}
+{% load chartit %}
+{{ weatherchart|load_charts:"container" }}
+{% endblock %}
+
+<!-- <head> -->
+    <!-- code to include the highcharts and jQuery libraries goes here -->
+    <!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
+    <!-- load_charts filter takes a comma-separated list of id's where -->
+    <!-- the charts need to be rendered to                             -->
+    <!-- {% load chartit %} -->
+    <!-- {{ weatherchart|load_charts:"container" }} -->
+<!-- </head> -->
+{% block body_block %}
+
+<div id='container'> Chart will be rendered here </div>
+
+{% endblock %}

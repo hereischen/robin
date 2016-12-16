@@ -361,8 +361,53 @@ def comment_stats(request):
                                             'updated_at': comment.updated_at,
                                             'patch_url': _build_github_pull_url(repo.owner, repo.repo, comment.pull.pull_number),
                                             })
+            # group comments of same pull together
+            values = set(map(lambda x:x['patch_url'], details))
+            details_group = [[y for y in details if y['patch_url'] == x] for x in values]
+            new_details = [{ 'patch_count':len(details_group),
+                             'review_count':len(details),
+                             'data':details_group}] 
 
-            response = _paginate_response(details, request)
+            response = _paginate_response(new_details, request)
             return response
         raise APIError(APIError.INVALID_REQUEST_DATA, detail=serializer.errors)
     raise APIError(APIError.INVALID_REQUEST_METHOD, detail='Does Not Support Post Method')
+
+# from django.shortcuts import render
+# from chartit import DataPool, Chart
+
+# def weather_chart_view(request):
+#     #Step 1: Create a DataPool with the data we want to retrieve.
+#     weatherdata = \
+#         DataPool(
+#            series=
+#             [{'options': {
+#                'source': Pull.objects.all()},
+#               'terms': [
+#                 'author',
+#                 'additions',
+#                 'deletions']}
+#              ])
+
+#     #Step 2: Create the Chart object
+#     cht = Chart(
+#             datasource = weatherdata,
+#             series_options =
+#               [{'options':{
+#                   'type': 'column',
+#                   'stacking': False},
+#                 'terms':{
+#                   'author': [
+#                     'additions',
+#                     'deletions']
+#                   }}],
+#             chart_options =
+#               {'title': {
+#                    'text': 'Weather Data of Boston and Houston'},
+#                'xAxis': {'title': {'text': 'author'}},
+#                'chart': { 'zoomType': 'xy'}
+#                        })
+
+
+#     #Step 3: Send the chart object to the template.
+#     return render(request, 'test.html',{'weatherchart': cht})

@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^stats/pending-patchs/$', views.pending_patchs),
     url(r'^stats/commits/$', views.commit_stats),
     url(r'^stats/comments/$', views.comment_stats),
+    # url(r'^stats/test/$', views.weather_chart_view),
 
 ]

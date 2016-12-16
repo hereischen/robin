@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'statistics',
     'crons',
     'api',
+    'chartit',
+
 ]
 
 MIDDLEWARE_CLASSES = [
