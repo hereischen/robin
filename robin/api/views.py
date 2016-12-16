@@ -366,41 +366,41 @@ def comment_stats(request):
         raise APIError(APIError.INVALID_REQUEST_DATA, detail=serializer.errors)
     raise APIError(APIError.INVALID_REQUEST_METHOD, detail='Does Not Support Post Method')
 
-from django.shortcuts import render
-from chartit import DataPool, Chart
+# from django.shortcuts import render
+# from chartit import DataPool, Chart
 
-def weather_chart_view(request):
-    #Step 1: Create a DataPool with the data we want to retrieve.
-    weatherdata = \
-        DataPool(
-           series=
-            [{'options': {
-               'source': Pull.objects.all()},
-              'terms': [
-                'author',
-                'additions',
-                'deletions']}
-             ])
+# def weather_chart_view(request):
+#     #Step 1: Create a DataPool with the data we want to retrieve.
+#     weatherdata = \
+#         DataPool(
+#            series=
+#             [{'options': {
+#                'source': Pull.objects.all()},
+#               'terms': [
+#                 'author',
+#                 'additions',
+#                 'deletions']}
+#              ])
 
-    #Step 2: Create the Chart object
-    cht = Chart(
-            datasource = weatherdata,
-            series_options =
-              [{'options':{
-                  'type': 'column',
-                  'stacking': False},
-                'terms':{
-                  'author': [
-                    'additions',
-                    'deletions']
-                  }}],
-            chart_options =
-              {'title': {
-                   'text': 'Weather Data of Boston and Houston'},
-               'xAxis': {'title': {'text': 'author'}},
-               'chart': { 'zoomType': 'xy'}
-                       })
+#     #Step 2: Create the Chart object
+#     cht = Chart(
+#             datasource = weatherdata,
+#             series_options =
+#               [{'options':{
+#                   'type': 'column',
+#                   'stacking': False},
+#                 'terms':{
+#                   'author': [
+#                     'additions',
+#                     'deletions']
+#                   }}],
+#             chart_options =
+#               {'title': {
+#                    'text': 'Weather Data of Boston and Houston'},
+#                'xAxis': {'title': {'text': 'author'}},
+#                'chart': { 'zoomType': 'xy'}
+#                        })
 
 
-    #Step 3: Send the chart object to the template.
-    return render(request, 'test.html',{'weatherchart': cht})
+#     #Step 3: Send the chart object to the template.
+#     return render(request, 'test.html',{'weatherchart': cht})
