@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'statistics',
     'crons',
     'api',
-    'chartit',
+    # 'chartit',
 
 ]
 
