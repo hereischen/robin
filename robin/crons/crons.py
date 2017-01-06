@@ -6,6 +6,7 @@ import pytz
 
 from datetime import timedelta, date, datetime
 from django.db import transaction as dbtransaction
+from django.db.models import F
 from commons import common_helpers
 from members.models import Member
 from statistics.models import Repository, Pull, Commit, Comment
@@ -337,6 +338,83 @@ def auto_change_pull_state():
             pull_db.closed_at = str(utc2local_parser(pull['closed_at']))[:-6]
             pull_db.save()
     logger.info('[CRON] auto_change_pull_state on date %s done' % YESTERDAY)
+
+
+# def _weekly_query(from_date, to_date, summary_type):
+#     members = Member.ojects.all()
+#     repos = Repository.objects.all()
+#     counter = 0
+#     # reviws
+#     if summary_type == 0:
+#         for repo in repos:
+#             for member in members:
+#                 comments = Comment.objects.filter(author=member.github_account,
+#                                                   created_at__range=(from_date,
+#                                                                      to_date),
+#                                                   pull__repository=repo)
+#                 for comment in comments:
+#                     if comment.author != comment.pull.author:
+#                         counter += 1
+#     # submitted
+#     elif summary_type == 1:
+#         for repo in repos:
+#             for member in members:
+#                 pulls = Pull.objects.filter(repository=repo,
+#            git                                  author=member.github_account,
+#                                             created_at__range=(from_date,
+#                                                                to_date))
+#                 counter += len(pulls)
+#     # updated
+#     elif summary_type == 2:
+#         for repo in repos:
+#             for member in members:
+#                 pulls = Pull.objects.filter(repository=repo,
+#                                             author=member.github_account,
+#                                             pull_merged=False,
+#                                             updated_at__range=(from_date, to_date)
+#                                             ).exclude(created_at=F('updated_at')) | Pull.objects.filter(
+#                                                 repository=repo,
+#                                                 author=member.github_account,
+#                                                 pull_merged=True,
+#                                                 updated_at__range=(from_date, to_date)
+#                                                 ).exclude(created_at=F('updated_at')
+#                                                          ).exclude(updated_at__gt=F('closed_at'))
+#                 counter += len(pulls)
+#     # merged
+#     elif summary_type == 3:
+#         for repo in repos:
+#             for member in members:
+#                 pulls = Pull.objects.filter(repository=repo, pull_state=0, pull_merged=True,
+#                                                 author=member.github_account,
+#                                                 closed_at__range=(from_date, to_date))
+#                 counter += len(pulls)
+
+#     print counter
+
+
+# def weekly_report(report_date=None):
+#     # report date must be every Saturday
+#     if report_date is None:
+#         report_date = date.today() - timedelta(days=60)
+#     week_number = '%sw%s' % (report_date.isocalendar()[0],
+#                              report_date.isocalendar()[1])
+#     from_date = report_date - timedelta(days=report_date.weekday()) - timedelta(days=1)
+#     to_date = from_date + timedelta(days=6)
+
+    
+#     print 'week_number', week_number
+#     print 'report_date', report_date
+#     print 'from_date', from_date
+#     print 'to_date', to_date
+
+
+
+
+
+
+
+
+
 
 # =================================
 # auto_load_commits_of_members()
