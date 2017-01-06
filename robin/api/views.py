@@ -46,6 +46,42 @@ def _build_github_pull_url(owner, repo, pull_number):
     return url
 
 
+def filter_submitted_pulls(start_date, end_date, repo, member):
+    pulls = Pull.objects.filter(repository=repo, author=member.github_account,
+                                created_at__range=(start_date, end_date)
+                                ).order_by('created_at')
+    return pulls
+
+
+def filter_updated_pulls(start_date, end_date, repo, member):
+    pulls = Pull.objects.filter(repository=repo,
+                                author=member.github_account,
+                                pull_merged=False,
+                                updated_at__range=(start_date, end_date)
+                                ).exclude(created_at=F('updated_at')) | Pull.objects.filter(
+                                    repository=repo,
+                                    author=member.github_account,
+                                    pull_merged=True,
+                                    updated_at__range=(start_date, end_date)
+                                    ).exclude(created_at=F('updated_at')
+                                             ).exclude(updated_at__gt=F('closed_at'))
+    return pulls
+
+
+def filter_merged_pulls(start_date, end_date, repo, member):
+    pulls = Pull.objects.filter(repository=repo, pull_state=0, pull_merged=True,
+                                author=member.github_account,
+                                closed_at__range=(start_date, end_date))
+    return pulls
+
+
+def filter_comments(start_date, end_date, repo, member):
+    comments = Comment.objects.filter(author=member.github_account,
+                                  created_at__range=(start_date, end_date),
+                                  pull__repository=repo)
+    return comments
+
+
 class CustomPagination(PageNumberPagination):
     def get_paginated_response(self, data):
         return Response({
@@ -129,8 +165,9 @@ def opening_patchs(request):
 
                 for kerbroes_id in kerbroes_id_list:
                     member = Member.objects.get(kerbroes_id=kerbroes_id)
-                    pulls = Pull.objects.filter(repository=repo, author=member.github_account,
-                                                created_at__range=(start_date, end_date)).order_by('created_at')
+                    # pulls = Pull.objects.filter(repository=repo, author=member.github_account,
+                    #                             created_at__range=(start_date, end_date)).order_by('created_at')
+                    pulls = filter_submitted_pulls(start_date, end_date, repo, member)
                     for pull in pulls:
                         details.append({'patch_number': pull.pull_number,
                                         'repo': repo.repo,
@@ -175,9 +212,10 @@ def closed_patchs(request):
 
                 for kerbroes_id in kerbroes_id_list:
                     member = Member.objects.get(kerbroes_id=kerbroes_id)
-                    pulls = Pull.objects.filter(repository=repo, pull_state=0, pull_merged=True,
-                                                author=member.github_account,
-                                                closed_at__range=(start_date, end_date))
+                    # pulls = Pull.objects.filter(repository=repo, pull_state=0, pull_merged=True,
+                    #                             author=member.github_account,
+                    #                             closed_at__range=(start_date, end_date))
+                    pulls = filter_merged_pulls(start_date, end_date, repo, member)
                     for pull in pulls:
                         details.append({'patch_number': pull.pull_number,
                                         'repo': repo.repo,
@@ -224,18 +262,18 @@ def updated_patchs(request):
                     member = Member.objects.get(kerbroes_id=kerbroes_id)
                     # filter pulls are open
                     # then filter pulls are merged and exclude updated_at greater then closed at
-                    pulls = Pull.objects.filter(repository=repo,
-                                                author=member.github_account,
-                                                pull_merged=False,
-                                                updated_at__range=(start_date, end_date)
-                                                ).exclude(created_at=F('updated_at')) | Pull.objects.filter(
-                                                    repository=repo,
-                                                    author=member.github_account,
-                                                    pull_merged=True,
-                                                    updated_at__range=(start_date, end_date)
-                                                    ).exclude(created_at=F('updated_at')
-                                                             ).exclude(updated_at__gt=F('closed_at'))
-
+                    # pulls = Pull.objects.filter(repository=repo,
+                    #                             author=member.github_account,
+                    #                             pull_merged=False,
+                    #                             updated_at__range=(start_date, end_date)
+                    #                             ).exclude(created_at=F('updated_at')) | Pull.objects.filter(
+                    #                                 repository=repo,
+                    #                                 author=member.github_account,
+                    #                                 pull_merged=True,
+                    #                                 updated_at__range=(start_date, end_date)
+                    #                                 ).exclude(created_at=F('updated_at')
+                    #                                          ).exclude(updated_at__gt=F('closed_at'))
+                    pulls = filter_updated_pulls(start_date, end_date, repo, member)
                     for pull in pulls:
                         details.append({'patch_number': pull.pull_number,
                                         'repo': repo.repo,
@@ -347,9 +385,10 @@ def comment_stats(request):
                 kerbroes_id_list = serializer.validated_data.get('kerbroes_id', '').strip().split(',')
                 for kerbroes_id in kerbroes_id_list:
                     member = Member.objects.get(kerbroes_id=kerbroes_id)
-                    comments = Comment.objects.filter(author=member.github_account,
-                                                      created_at__range=(start_date, end_date),
-                                                      pull__repository=repo)
+                    # comments = Comment.objects.filter(author=member.github_account,
+                    #                                   created_at__range=(start_date, end_date),
+                    #                                   pull__repository=repo)
+                    comments = filter_comments(start_date, end_date, repo, member)
                     for comment in comments:
                         if comment.author != comment.pull.author:
                             details.append({'comment_id': comment.comment_id,
