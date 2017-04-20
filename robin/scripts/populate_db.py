@@ -8,16 +8,14 @@ print os.path.join(ROOT_DIR, 'team_member_data.csv')
 
 
 def populate_members():
-    team = Team.objects.get_or_create(team_code='kvm', team_name='KVM_QE')[0]
-    print 'created team : %s' % team
-
     with open(os.path.join(ROOT_DIR, 'team_member_data.csv')) as csvfile:
         reader = csv.DictReader(csvfile)
         counter = 0
         for row in reader:
             if row['Github_Account'] != '':
                 counter += 1
-                print(row['Github_Account'], row['Name'], row['Kerberos'])
+                print(row['Github_Account'], row['Name'], row['Kerberos'], row['Team_Code'])
+                team = Team.objects.get_or_create(team_code=row['Team_Code'], team_name=row['Team_Code'])[0]
                 member = Member.objects.create(kerbroes_id=row['Kerberos'],
                                                name=row['Name'],
                                                github_account=row['Github_Account'],
