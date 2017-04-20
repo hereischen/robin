@@ -163,12 +163,17 @@ var reopData = new Vue({
                 self.repoTmp.forEach(function(el) {
                     repo_ids.push(el.id)
                 });
-            // console.log(repo_ids);
+
+            var kerbroes_ids = [];
+                self.teamTmp.forEach(function(el) {
+                    kerbroes_ids.push(el.members)
+                });
+
             if (this.category == 'openingPatchs'){
                 get('/api/stats/opening-patchs', {
                     repository_id: repo_ids.join(','),
                     stats_type: self.type,
-                    kerbroes_id: self.teamTmp[0].members.join(','),
+                    kerbroes_id: kerbroes_ids.join(','),
                     start_date: self.beginTime,
                     end_date: self.endTime
                 }).then(function(res) {
@@ -182,7 +187,7 @@ var reopData = new Vue({
                 get('/api/stats/updated-patchs', {
                     repository_id: repo_ids.join(','),
                     stats_type: self.type,
-                    kerbroes_id: self.teamTmp[0].members.join(','),
+                    kerbroes_id: kerbroes_ids.join(','),
                     start_date: self.beginTime,
                     end_date: self.endTime
                 }).then(function(res) {
@@ -196,7 +201,7 @@ var reopData = new Vue({
                 get('/api/stats/closed-patchs', {
                     repository_id: repo_ids.join(','),
                     stats_type: self.type,
-                    kerbroes_id: self.teamTmp[0].members.join(','),
+                    kerbroes_id: kerbroes_ids.join(','),
                     start_date: self.beginTime,
                     end_date: self.endTime
                 }).then(function(res) {
@@ -210,9 +215,9 @@ var reopData = new Vue({
             }
             if (this.category == 'commits'){
                 get('/api/stats/commits', {
-                    repository_id: self.repoTmp[0].id,
+                    repository_id: repo_ids.id,
                     stats_type: self.type,
-                    kerbroes_id: self.teamTmp[0].members.join(','),
+                    kerbroes_id: kerbroes_ids.join(','),
                     start_date: self.beginTime,
                     end_date: self.endTime
                 }).then(function(res) {
@@ -228,7 +233,7 @@ var reopData = new Vue({
                 get('/api/stats/comments', {
                     repository_id: repo_ids.join(','),
                     // stats_type: self.type,
-                    kerbroes_id: self.teamTmp[0].members.join(','),
+                    kerbroes_id: kerbroes_ids.join(','),
                     start_date: self.beginTime,
                     end_date: self.endTime
                 }).then(function(res) {
