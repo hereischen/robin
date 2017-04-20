@@ -9,6 +9,9 @@ Description
  - Deprecated: 弃用已有功能
  - Removed: 删除已有功能
 
+0.0.5
+-----
+ - Improvment: Updated to group team member into sub team, and enable multiple team selection.
 
 0.0.4
 -----
