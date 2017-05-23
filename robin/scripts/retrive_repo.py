@@ -66,67 +66,67 @@ def auto_load_pulls():
         pulls = repo.get_pulls(page=0, access_token=ACCESS_TOKEN)
         print len(pulls), 'no of pulls'
         for pull in pulls:  # debug!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            # only pulls that pulled by members are count.
-            if pull['user']['login'] in [member.github_account for member in members]:
-                # current pull request based on number.
-                print pull['user']['login']
-                pull = repo.get_pull_by_number(
-                    number=pull['number'], access_token=ACCESS_TOKEN)
+            # retrive all the pull request, update on 23/05/17.
+            # if pull['user']['login'] in [member.github_account for member in members]:
+            # current pull request based on number.
+            print pull['user']['login']
+            pull = repo.get_pull_by_number(
+                number=pull['number'], access_token=ACCESS_TOKEN)
 
-                if pull['state'] == 'closed':
-                    pull['state'] = 0
-                if pull['state'] == 'open':
-                    pull['state'] = 1
-                if pull['closed_at'] is not None:
-                    pull['closed_at'] = str(
-                        utc2local_parser(pull['closed_at']))[:-6]
+            if pull['state'] == 'closed':
+                pull['state'] = 0
+            if pull['state'] == 'open':
+                pull['state'] = 1
+            if pull['closed_at'] is not None:
+                pull['closed_at'] = str(
+                    utc2local_parser(pull['closed_at']))[:-6]
 
-                pull_db = Pull.objects.get_or_create(pull_number=pull['number'],
-                                                     title=pull['title'],
-                                                     author=pull['user']['login'],
-                                                     body=pull['body'],
-                                                     pull_state=pull['state'],
-                                                     pull_merged=pull['merged'],
-                                                     comments=pull['comments'],
-                                                     review_comments=pull['review_comments'],
-                                                     commits=pull['commits'],
-                                                     additions=pull['additions'],
-                                                     deletions=pull['deletions'],
-                                                     changed_files=pull['changed_files'],
-                                                     created_at=str(utc2local_parser(
-                                                         pull['created_at']))[:-6],
-                                                     updated_at=str(utc2local_parser(
-                                                         pull['updated_at']))[:-6],
-                                                     closed_at=pull['closed_at'],
-                                                     repository=repository_db
-                                                     )[0]
-                print pull_db
+            pull_db = Pull.objects.get_or_create(pull_number=pull['number'],
+                                                 title=pull['title'],
+                                                 author=pull['user']['login'],
+                                                 body=pull['body'],
+                                                 pull_state=pull['state'],
+                                                 pull_merged=pull['merged'],
+                                                 comments=pull['comments'],
+                                                 review_comments=pull['review_comments'],
+                                                 commits=pull['commits'],
+                                                 additions=pull['additions'],
+                                                 deletions=pull['deletions'],
+                                                 changed_files=pull['changed_files'],
+                                                 created_at=str(utc2local_parser(
+                                                     pull['created_at']))[:-6],
+                                                 updated_at=str(utc2local_parser(
+                                                     pull['updated_at']))[:-6],
+                                                 closed_at=pull['closed_at'],
+                                                 repository=repository_db
+                                                 )[0]
+            print pull_db
 
-                if pull_db.comments > 0:
-                    # create issue's comments in db if it exists, witch is type
-                    # 0
-                    comments = repo.get_issue_comments(pull['number'], access_token=ACCESS_TOKEN)
-                    # print comments, '@@@@@@@'
-                    _create_comments(comments, 0, pull_db, members)
+            if pull_db.comments > 0:
+                # create issue's comments in db if it exists, witch is type
+                # 0
+                comments = repo.get_issue_comments(pull['number'], access_token=ACCESS_TOKEN)
+                # print comments, '@@@@@@@'
+                _create_comments(comments, 0, pull_db, members)
 
-                if pull_db.review_comments > 0:
-                    # create pull's comments in db if it exists, witch is type
-                    # 1
-                    comments = repo.get_pull_comments(pull['number'], access_token=ACCESS_TOKEN)
-                    _create_comments(comments, 1, pull_db, members)
-                if pull_db.commits > 0:
-                    commits = repo.get_pull_commits(pull['number'], access_token=ACCESS_TOKEN)
-                    for commit in commits:
-                        # commits that commitd by members are count.
-                        if commit['commit']['author']['email'] in [member.rh_email for member in members]:
-                            Commit.objects.get_or_create(sha=commit['sha'],
-                                                         author=commit['commit']['author']['name'],
-                                                         email=commit['commit']['author']['email'],
-                                                         date=str(utc2local_parser(
-                                                             commit['commit']['author']['date']))[:-6],
-                                                         message=commit['commit']['message'],
-                                                         repository=repository_db,
-                                                         pull=pull_db)
+            if pull_db.review_comments > 0:
+                # create pull's comments in db if it exists, witch is type
+                # 1
+                comments = repo.get_pull_comments(pull['number'], access_token=ACCESS_TOKEN)
+                _create_comments(comments, 1, pull_db, members)
+            if pull_db.commits > 0:
+                commits = repo.get_pull_commits(pull['number'], access_token=ACCESS_TOKEN)
+                for commit in commits:
+                    # commits that commitd by members are count.
+                    if commit['commit']['author']['email'] in [member.rh_email for member in members]:
+                        Commit.objects.get_or_create(sha=commit['sha'],
+                                                     author=commit['commit']['author']['name'],
+                                                     email=commit['commit']['author']['email'],
+                                                     date=str(utc2local_parser(
+                                                         commit['commit']['author']['date']))[:-6],
+                                                     message=commit['commit']['message'],
+                                                     repository=repository_db,
+                                                     pull=pull_db)
 
 
 @dbtransaction.atomic
