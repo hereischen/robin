@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import datetime
 
 from django.db import models
 from commons.models import Timestampable
@@ -29,6 +30,7 @@ class Member(Timestampable, models.Model):
     rh_email = models.EmailField(unique=True, verbose_name='RedHat email')
     github_account = models.CharField(max_length=32, unique=True, verbose_name='GitHub account')
     serving = models.BooleanField(default=True, verbose_name='on the job')
+    leave_date = models.DateField(null=True, blank=True, verbose_name='leave date')
     team = models.ForeignKey('Team', related_name='members', verbose_name=u'team')
 
     class Meta:
@@ -40,4 +42,6 @@ class Member(Timestampable, models.Model):
 
     def save(self, **kwargs):
         self.rh_email = '@'.join([self.kerbroes_id, 'redhat.com'])
+        if self.serving is False:
+            self.leave_date = datetime.date.today()
         super(Member, self).save(kwargs)
