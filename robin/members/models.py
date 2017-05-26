@@ -42,6 +42,7 @@ class Member(Timestampable, models.Model):
 
     def save(self, **kwargs):
         self.rh_email = '@'.join([self.kerbroes_id, 'redhat.com'])
-        if self.serving is False:
-            self.leave_date = datetime.date.today()
+        if self.leave_date is None:
+            if not self.serving:
+                self.leave_date = datetime.date.today()
         super(Member, self).save(kwargs)
