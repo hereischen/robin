@@ -8,7 +8,7 @@ from datetime import timedelta, date, datetime
 from django.db import transaction as dbtransaction
 from commons import common_helpers
 from members.models import Member
-from statistics.models import Repository, Pull, Commit, Comment
+from statistics.models import Repository, Pull, Comment
 from scripts.githublight import Repository as Repo
 
 
@@ -73,41 +73,10 @@ def _create_comments(comments, comment_type, pull_db, members):
                                        )
 
 
-# @dbtransaction.atomic
-# def auto_load_commits_of_members():
-#     """
-#     load T-1 commits of all members into database.
-#     """
-#     # !!! there is an API rate limit, https://developer.github.com/v3/#rate-limiting
-#     members = Member.objects.all()
-#     repositories = Repository.objects.all()  # from database
-#     since, until = date_generartor()
-
-#     for repository in repositories:
-#         repo = Repo(repository.owner, repository.repo)
-#         # print repository
-#         # print repository log
-#         for member in members:
-#             # print member
-#             commits = repo.get_commits_by_email(
-#                 member.rh_email, since, until, access_token=ACCESS_TOKEN)
-#             for commit in commits:
-#                 Commit.objects.create(sha=commit['sha'],
-#                                       author=commit['commit'][
-#                                           'author']['name'],
-#                                       email=commit['commit'][
-#                                           'author']['email'],
-#                                       date=str(utc2local_parser(
-#                                           commit['commit']['author']['date']))[:-6],
-#                                       message=commit['commit']['message'],
-#                                       repository=repository
-#                                       )
-
-
 @dbtransaction.atomic
 def auto_load_pulls():
     """
-    load the latest page of pull request and its comment, commits into database.
+    load the latest page of pull request and its comments into database.
     """
     logger.info('[CRON] auto_load_pulls on date %s start.' % YESTERDAY)
     members = Member.objects.all()
@@ -116,10 +85,10 @@ def auto_load_pulls():
     for repository_db in repositories_db:
         print repository_db
         repo = Repo(repository_db.owner, repository_db.repo)
-        # due to can not get pulls by date, everyday get latest 60.
-        pulls = repo.get_pulls(page=2, access_token=ACCESS_TOKEN)
+        # due to can not get pulls by date, everyday get latest 120.
+        pulls = repo.get_pulls(page=4, access_token=ACCESS_TOKEN)
         # print len(pulls), 'no of pulls'
-        for pull in pulls:  # debug!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        for pull in pulls:  # debug, 5000 rate!
             # retrive all the pull request, update on 23/05/17.
             # if pull['user']['login'] in [member.github_account for member in members]:
             # current pull request based on number.
@@ -134,27 +103,9 @@ def auto_load_pulls():
                 pull['closed_at'] = str(
                     utc2local_parser(pull['closed_at']))[:-6]
 
-            print Pull.objects.is_exist(pull['number'], repository_db), pull['number'], repository_db
             if Pull.objects.is_exist(pull['number'], repository_db):
                 # auto_load_pulls will not update pulls,left to auto_change_pull_state.
                 pass
-                # logger.info('[CRON] auto_load_pulls updating pull in db on date %s start.' % YESTERDAY)
-                # pull_db = Pull.objects.get(pull_number=pull['number'], repository=repository_db)
-                # print pull_db.updated_at
-                # print str(utc2local_parser(pull['updated_at']))[:-6]
-                # pull_db.body = pull['body']
-                # pull_db.pull_state = pull['state']
-                # pull_db.pull_merged = pull['merged']
-                # pull_db.comments = pull['comments']
-                # pull_db.review_comments = pull['review_comments']
-                # pull_db.commits = pull['commits']
-                # pull_db.additions = pull['additions']
-                # pull_db.deletions = pull['deletions']
-                # pull_db.changed_files = pull['changed_files']
-                # pull_db.updated_at = str(utc2local_parser(
-                #     pull['updated_at']))[:-6]
-                # pull_db.closed_at = pull['closed_at']
-                # pull_db.save()
             else:
                 logger.info('[CRON] auto_load_pulls creating new pull in db on date %s start.' % YESTERDAY)
                 pull_db = Pull.objects.create(pull_number=pull['number'],
@@ -188,20 +139,7 @@ def auto_load_pulls():
                     # 1
                     comments = repo.get_pull_comments(pull['number'], access_token=ACCESS_TOKEN)
                     _create_comments(comments, 1, pull_db, members)
-                if pull_db.commits > 0:
-                    logger.info('[CRON] auto_load_pulls creating  %s commit in db on date %s start.' % (pull_db.pull_number, YESTERDAY))
-                    commits = repo.get_pull_commits(pull['number'], access_token=ACCESS_TOKEN)
-                    for commit in commits:
-                        # commits that commitd by members are count.
-                        if commit['commit']['author']['email'] in [member.rh_email for member in members]:
-                            Commit.objects.get_or_create(sha=commit['sha'],
-                                                         author=commit['commit']['author']['name'],
-                                                         email=commit['commit']['author']['email'],
-                                                         date=str(utc2local_parser(
-                                                             commit['commit']['author']['date']))[:-6],
-                                                         message=commit['commit']['message'],
-                                                         repository=repository_db,
-                                                         pull=pull_db)
+
     logger.info('[CRON] auto_load_pulls on date %s done.' % YESTERDAY)
 
 
@@ -264,7 +202,7 @@ def auto_change_pull_state():
                     pull['updated_at']))[:-6], '%Y-%m-%d %H:%M:%S')) and (pull['state'] == 'open')):
             # if a pull request is updated, it could have new comments and
             # commits
-            # update basic pull info in db
+            # update pull info in db
             logger.info('[CRON] auto_change_pull_state update pull in db on date %s start' % YESTERDAY)
             pull_db.body = pull['body']
             pull_db.pull_merged = pull['merged']
@@ -297,29 +235,6 @@ def auto_change_pull_state():
                 for comment in comments:
                     if comment['id'] in new_comments:
                         _create_comments(comments, 1, pull_db, members)
-            # update commit info of this pull
-            # stop updating commits as it does not crrect(2016/10/28).
-            # it is becaues everything stays same ecpect sha in a pull request's new commits
-            # if pull_db.commits > 0:
-            #     commits_db = Commit.objects.filter(pull=pull_db)
-            #     commits = repo.get_pull_commits(pull['number'], access_token=ACCESS_TOKEN)
-            #     new_commits = (set([commit['sha'] for commit in commits]) -
-            #                    set([commit_db.sha for commit_db in commits_db]))
-            #     for commit in commits:
-            #         if commit['sha'] in new_commits:
-
-            #             # commits that commitd by members are count.
-            #             if commit['commit']['author']['email'] in [member.rh_email for member in members]:
-            #                 print pull_db.pull_number, pull_db.author
-            #                 print commits
-            #                 Commit.objects.get_or_create(sha=commit['sha'],
-            #                                              author=commit['commit']['author']['name'],
-            #                                              email=commit['commit']['author']['email'],
-            #                                              date=str(utc2local_parser(
-            #                                                  commit['commit']['author']['date']))[:-6],
-            #                                              message=commit['commit']['message'],
-            #                                              repository=pull_db.repository,
-            #                                              pull=pull_db)
 
         if pull['state'] == 'closed':
             logger.info('[CRON] auto_change_pull_state close pull in db on date %s start' % YESTERDAY)
