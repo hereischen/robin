@@ -79,7 +79,7 @@ def auto_load_pulls():
     load the latest page of pull request and its comments into database.
     """
     logger.info('[CRON] auto_load_pulls on date %s start.' % YESTERDAY)
-    members = Member.objects.all()
+    members = Member.objects.filter(serving=True)
     repositories_db = Repository.objects.all()  # from database
 
     for repository_db in repositories_db:
@@ -188,7 +188,7 @@ def auto_change_pull_state():
     """
     # pull requests are still open
     logger.info('[CRON] auto_change_pull_state on date %s start' % YESTERDAY)
-    members = Member.objects.all()
+    members = Member.objects.filter(serving=True)
     pulls_db = Pull.objects.filter(pull_state=1)
     for pull_db in pulls_db:
         # call github api
