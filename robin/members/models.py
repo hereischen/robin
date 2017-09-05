@@ -21,6 +21,12 @@ class Team(Timestampable, models.Model):
         return self.team_name
 
 
+class MemberManager(models.Manager):
+
+    def is_exist(self, github_account):
+        return True if self.get_queryset().filter(github_account=github_account) else False
+
+
 class Member(Timestampable, models.Model):
     """
     Defines fields of a member.
@@ -32,6 +38,7 @@ class Member(Timestampable, models.Model):
     serving = models.BooleanField(default=True, verbose_name='on the job')
     leave_date = models.DateField(null=True, blank=True, verbose_name='leave date')
     team = models.ForeignKey('Team', related_name='members', verbose_name=u'team')
+    objects = MemberManager()
 
     class Meta:
         verbose_name = _('member')
