@@ -23,8 +23,10 @@ class Team(Timestampable, models.Model):
 
 class MemberManager(models.Manager):
 
-    def is_exist(self, github_account):
-        return True if self.get_queryset().filter(github_account=github_account) else False
+    def is_serving(self, github_account):
+        return True if self.get_queryset().filter(github_account=github_account,
+                                                  serving=True
+                                                  ) else False
 
 
 class Member(Timestampable, models.Model):

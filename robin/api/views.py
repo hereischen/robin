@@ -306,22 +306,24 @@ def pending_patchs(request):
             pulls = Pull.objects.filter(repository=repo, pull_state=1).order_by('-created_at')
             today = datetime.today()
             for pull in pulls:
-                member = Member.objects.get(github_account=pull.author)
-                total_pending = today - pull.created_at
-                last_updated = today - pull.updated_at
-                review_comments = Comment.objects.filter(comment_type=1, pull_id=pull.id)
-                details.append({'patch_number': pull.pull_number,
-                                'repo': repo.repo,
-                                'patch_title': pull.title,
-                                'bug_id': pull.bug_id,
-                                'author': member.kerbroes_id,
-                                'reviews': len(review_comments),
-                                'total_pending': total_pending.days,
-                                'last_updated': last_updated.days,
-                                'create_at': pull.created_at,
-                                'updated_at': pull.updated_at,
-                                'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
-                                })
+                # filter out upstream author
+                if Member.objects.is_serving(pull.author):
+                    member = Member.objects.get(github_account=pull.author)
+                    total_pending = today - pull.created_at
+                    last_updated = today - pull.updated_at
+                    review_comments = Comment.objects.filter(comment_type=1, pull_id=pull.id)
+                    details.append({'patch_number': pull.pull_number,
+                                    'repo': repo.repo,
+                                    'patch_title': pull.title,
+                                    'bug_id': pull.bug_id,
+                                    'author': member.kerbroes_id,
+                                    'reviews': len(review_comments),
+                                    'total_pending': total_pending.days,
+                                    'last_updated': last_updated.days,
+                                    'create_at': pull.created_at,
+                                    'updated_at': pull.updated_at,
+                                    'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
+                                    })
 
             response = _paginate_response(details, request)
             return response
