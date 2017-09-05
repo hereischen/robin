@@ -95,7 +95,7 @@ def member_list(request):
             logger.info('[member_list] Received data is valid.')
             details = []
             team = Team.objects.get(team_code=serializer.validated_data['team_code'])
-            members = Member.objects.filter(team=team)
+            members = Member.objects.filter(team=team, serving=True)
             for member in members:
                 details.append({'name': member.name,
                                 'kerbroes_id': member.kerbroes_id,
