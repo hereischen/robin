@@ -9,13 +9,17 @@ Description
  - Deprecated: 弃用已有功能
  - Removed: 删除已有功能
 
+ 0.0.8
+ -----
+  - Fix: Members who have left will not be displayed in each team tab.
+
  0.0.7
  -----
-  - New: added an admin page for team and member management.
-  - Fix: robin does not collect the review data successfully,
+  - New: Added an admin page for team and member management.
+  - Fix: Robin does not collect the review data successfully,
          if it's closed and commented on one day.
-  - Fix: robin can not get all review data if the patch was sent by a upstream person.
-  - Deprecated: robin will not fetch commit ifno from now on.
+  - Fix: Robin can not get all review data if the patch was sent by a upstream person.
+  - Deprecated: Robin will not fetch commit ifno from now on.
 
 0.0.5
 -----
