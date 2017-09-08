@@ -22,15 +22,15 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Repo Owner</th>
-                        <th>Repo Name</th>
-                        <th>Pending info</th>
+                        <!-- <th>Repo Owner</th> -->
+                        <th>Repository Name</th>
+                        <th>Pending Information</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="repo in repoData.repos">
-                        <td class="left"><input type="checkbox" v-model="repo.checked" @click="chooseRepo(repo)"> ${repo.id}</td>
-                        <td>${repo.owner}</td>
+                        <td class="left"><input type="checkbox" v-model="repo.checked" @click="chooseRepo(repo)"> ${repoData.repos.indexOf(repo) + 1}</td>
+                        <!-- td>${repo.owner}</td> ${repo.id}-->
                         <td>${repo.repo}</td>
                         <td><button id="p-btn${repo.id}" type="button" class="btn btn-xs btn-primary" @click="showPending(repo)">Show</button></td>
                     </tr>
