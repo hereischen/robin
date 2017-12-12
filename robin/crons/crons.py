@@ -186,6 +186,29 @@ def auto_change_pull_state():
     """
     change pull state when it is closed or updated
     """
+    # create new comments of when updating pull reuqest
+    def _create_newly_added_comments(pull_db, members):
+        comments_db = Comment.objects.filter(pull=pull_db)
+        if pull_db.comments > 0:
+            # create issue's comments in db if it exists, witch is type
+            # 0
+            comments = repo.get_issue_comments(pull['number'], access_token=ACCESS_TOKEN)
+            new_comments = (set([comment['id'] for comment in comments]) -
+                            set([comment_db.comment_id for comment_db in comments_db]))
+            for comment in comments:
+                if comment['id'] in new_comments:
+                    _create_comments(comments, 0, pull_db, members)
+
+        if pull_db.review_comments > 0:
+            # create pull's comments in db if it exists, witch is type
+            # 1
+            comments = repo.get_pull_comments(pull['number'], access_token=ACCESS_TOKEN)
+            new_comments = (set([comment['id'] for comment in comments]) -
+                            set([comment_db.comment_id for comment_db in comments_db]))
+            for comment in comments:
+                if comment['id'] in new_comments:
+                    _create_comments(comments, 1, pull_db, members)
+
     # pull requests are still open
     logger.info('[CRON] auto_change_pull_state on date %s start' % YESTERDAY)
     members = Member.objects.filter(serving=True)
@@ -213,30 +236,7 @@ def auto_change_pull_state():
             pull_db.updated_at = str(utc2local_parser(pull['updated_at']))[:-6]
             pull_db.save()
 
-            # create new comments of when updating pull reuqest
-            def _create_newly_added_comments():
-                comments_db = Comment.objects.filter(pull=pull_db)
-                if pull_db.comments > 0:
-                    # create issue's comments in db if it exists, witch is type
-                    # 0
-                    comments = repo.get_issue_comments(pull['number'], access_token=ACCESS_TOKEN)
-                    new_comments = (set([comment['id'] for comment in comments]) -
-                                    set([comment_db.comment_id for comment_db in comments_db]))
-                    for comment in comments:
-                        if comment['id'] in new_comments:
-                            _create_comments(comments, 0, pull_db, members)
-
-                if pull_db.review_comments > 0:
-                    # create pull's comments in db if it exists, witch is type
-                    # 1
-                    comments = repo.get_pull_comments(pull['number'], access_token=ACCESS_TOKEN)
-                    new_comments = (set([comment['id'] for comment in comments]) -
-                                    set([comment_db.comment_id for comment_db in comments_db]))
-                    for comment in comments:
-                        if comment['id'] in new_comments:
-                            _create_comments(comments, 1, pull_db, members)
-
-            _create_newly_added_comments()
+            _create_newly_added_comments(pull_db, members)
 
         if pull['state'] == 'closed':
             logger.info('[CRON] auto_change_pull_state close pull in db on date %s start' % YESTERDAY)
@@ -254,7 +254,7 @@ def auto_change_pull_state():
             pull_db.closed_at = str(utc2local_parser(pull['closed_at']))[:-6]
             pull_db.save()
 
-            _create_newly_added_comments()
+            _create_newly_added_comments(pull_db, members)
 
     logger.info('[CRON] auto_change_pull_state on date %s done' % YESTERDAY)
 
