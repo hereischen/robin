@@ -10,7 +10,7 @@ class MemberInline(admin.StackedInline):
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('team_name', 'team_code', 'number_of_active_members')
-    readonly_fields = ('team_code', 'number_of_active_members')
+    readonly_fields = ( 'number_of_active_members',)
     inlines = [
         MemberInline,
     ]
