@@ -317,6 +317,7 @@ def pending_patchs(request):
                                     'patch_title': pull.title,
                                     'bug_id': pull.bug_id,
                                     'author': member.kerbroes_id,
+                                    'team':member.team.team_name,
                                     'reviews': len(review_comments),
                                     'total_pending': total_pending.days,
                                     'last_updated': last_updated.days,

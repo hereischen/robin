@@ -11,6 +11,10 @@ Description
 
  0.0.8
  -----
+  - New: Added team column in pending patch list.
+
+ 0.0.8
+ -----
   - Fix: Members who have left will not be displayed in each team tab.
   - Fix: Robin repo number and name displaying issue.
   - New: Added repo admin.
