@@ -67,11 +67,14 @@ class Pull(Timestampable, models.Model):
 
     additions = models.IntegerField(default=0, verbose_name='commits additions')
     deletions = models.IntegerField(default=0, verbose_name='commits deletions')
-    changed_files = models.IntegerField(default=0, verbose_name='changed files ')
+    changed_files = models.IntegerField(default=0, verbose_name='changed files')
 
     created_at = models.DateTimeField(verbose_name='pull request created date')
     updated_at = models.DateTimeField(verbose_name='pull request uodated date')
     closed_at = models.DateTimeField(null=True, verbose_name='pull request closed date')
+
+    merged_by = models.CharField(
+        max_length=32, default="null", verbose_name='merged by')
 
     # comments = jsonfield.JSONField(verbose_name=u'issue comments')
     # ForeignKeys:
