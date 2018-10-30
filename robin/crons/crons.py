@@ -252,6 +252,8 @@ def auto_change_pull_state():
             pull_db.changed_files = pull['changed_files']
             pull_db.updated_at = str(utc2local_parser(pull['updated_at']))[:-6]
             pull_db.closed_at = str(utc2local_parser(pull['closed_at']))[:-6]
+            if pull['merged']:
+                pull_db.merged_by = pull["merged_by"]["login"]
             pull_db.save()
 
             _create_newly_added_comments(pull_db, members)

@@ -46,6 +46,15 @@ def _build_github_pull_url(owner, repo, pull_number):
     return url
 
 
+def _get_merged_by_kerbroes_id(github_account):
+    merged_by = github_account
+    if merged_by != "null":
+        member = Member.objects.filter(github_account=merged_by).first()
+        if member:
+            merged_by = member.kerbroes_id
+    return merged_by
+
+
 class CustomPagination(PageNumberPagination):
     def get_paginated_response(self, data):
         return Response({
@@ -132,6 +141,7 @@ def opening_patchs(request):
                     pulls = Pull.objects.filter(repository=repo, author=member.github_account,
                                                 created_at__range=(start_date, end_date)).order_by('created_at')
                     for pull in pulls:
+                        merged_by = _get_merged_by_kerbroes_id(pull.merged_by)
                         details.append({'patch_number': pull.pull_number,
                                         'repo': repo.repo,
                                         'patch_title': pull.title,
@@ -145,6 +155,7 @@ def opening_patchs(request):
                                         'created_at': pull.created_at,
                                         'updated_at': pull.updated_at,
                                         'closed_at': pull.closed_at,
+                                        'merged_by': merged_by,
                                         'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
                                         })
             response = _paginate_response(details, request)
@@ -179,6 +190,7 @@ def closed_patchs(request):
                                                 author=member.github_account,
                                                 closed_at__range=(start_date, end_date))
                     for pull in pulls:
+                        merged_by = _get_merged_by_kerbroes_id(pull.merged_by)
                         details.append({'patch_number': pull.pull_number,
                                         'repo': repo.repo,
                                         'patch_title': pull.title,
@@ -192,6 +204,7 @@ def closed_patchs(request):
                                         'created_at': pull.created_at,
                                         'updated_at': pull.updated_at,
                                         'closed_at': pull.closed_at,
+                                        'merged_by': merged_by,
                                         'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
                                         })
             response = _paginate_response(details, request)
@@ -237,6 +250,7 @@ def updated_patchs(request):
                                                              ).exclude(updated_at__gt=F('closed_at'))
 
                     for pull in pulls:
+                        merged_by = _get_merged_by_kerbroes_id(pull.merged_by)
                         details.append({'patch_number': pull.pull_number,
                                         'repo': repo.repo,
                                         'patch_title': pull.title,
@@ -250,6 +264,7 @@ def updated_patchs(request):
                                         'created_at': pull.created_at,
                                         'updated_at': pull.updated_at,
                                         'closed_at': pull.closed_at,
+                                        'merged_by': merged_by,
                                         'patch_url': _build_github_pull_url(repo.owner, repo.repo, pull.pull_number),
                                         })
             response = _paginate_response(details, request)
