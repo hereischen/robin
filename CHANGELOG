@@ -9,7 +9,12 @@ Description
  - Deprecated: 弃用已有功能
  - Removed: 删除已有功能
 
- 0.0.8
+
+  0.1.0
+ -----
+  - New: Added Merged by column in open/update/merged patch list.
+
+ 0.0.9
  -----
   - New: Added team column in pending patch list.
 
